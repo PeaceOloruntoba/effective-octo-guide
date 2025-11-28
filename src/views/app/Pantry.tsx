@@ -10,6 +10,8 @@ export default function Pantry() {
   const [quantity, setQuantity] = useState("");
   const [unit, setUnit] = useState("");
   const [expiresAt, setExpiresAt] = useState("");
+  const [adding, setAdding] = useState(false);
+  const [removingId, setRemovingId] = useState<string | number | null>(null);
 
   const load = async () => {
     setLoading(true);
@@ -27,6 +29,7 @@ export default function Pantry() {
   useEffect(() => { load(); }, []);
 
   const addItem = async () => {
+    setAdding(true);
     try {
       await api.pantry.create({ name, quantity, unit, expires_at: expiresAt || undefined });
       setName(""); setQuantity(""); setUnit(""); setExpiresAt("");
@@ -34,17 +37,18 @@ export default function Pantry() {
       toast.success("Added to pantry");
     } catch (e: any) {
       toast.error(e?.response?.data?.error || "Failed to add pantry item");
-    }
+    } finally { setAdding(false); }
   };
 
   const remove = async (id: string | number) => {
+    setRemovingId(id);
     try {
       await api.pantry.remove(id);
       await load();
       toast.success("Removed");
     } catch (e: any) {
       toast.error(e?.response?.data?.error || "Failed to remove item");
-    }
+    } finally { setRemovingId(null); }
   };
 
   return (
@@ -56,7 +60,7 @@ export default function Pantry() {
         <input className="h-10 rounded border px-3" placeholder="Unit" value={unit} onChange={(e)=>setUnit(e.target.value)} />
         <input className="h-10 rounded border px-3" placeholder="Expires at (YYYY-MM-DD)" value={expiresAt} onChange={(e)=>setExpiresAt(e.target.value)} />
       </div>
-      <button className="h-10 px-4 rounded text-white" style={{background:'#1f444c'}} onClick={addItem}>Add</button>
+      <button className="h-10 px-4 rounded text-white disabled:opacity-60" style={{background:'#1f444c'}} disabled={adding} onClick={addItem}>{adding? 'Adding...' : 'Add'}</button>
       {error ? <div className="text-red-600 mt-3">{error}</div> : null}
       <div className="mt-5">
         {loading ? (
@@ -71,7 +75,7 @@ export default function Pantry() {
                   <div className="font-medium">{it.name}</div>
                   <div className="text-sm text-gray-600">{[it.quantity, it.unit].filter(Boolean).join(" ")}</div>
                 </div>
-                <button className="text-red-600" onClick={()=>remove(it.id)}>Remove</button>
+                <button className="text-red-600 disabled:opacity-60" disabled={removingId===it.id} onClick={()=>remove(it.id)}>{removingId===it.id? 'Removing...' : 'Remove'}</button>
               </li>
             ))}
           </ul>

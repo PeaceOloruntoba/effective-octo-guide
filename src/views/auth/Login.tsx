@@ -20,7 +20,7 @@ export default function Login() {
         <div className="grid gap-3">
           <input className="h-10 rounded border px-3" placeholder="Email" value={email} onChange={(e)=>setEmail(e.target.value)} />
           <input className="h-10 rounded border px-3" placeholder="Password" type="password" value={password} onChange={(e)=>setPassword(e.target.value)} />
-          <button className="h-10 rounded text-white" style={{background:'#1f444c'}} disabled={loading} onClick={async()=>{ clearError(); await login({email,password}).catch(()=>{}); }}>Sign in</button>
+          <button className="h-10 rounded text-white disabled:opacity-60" style={{background:'#1f444c'}} disabled={loading} onClick={async()=>{ clearError(); await login({email,password}).catch(()=>{}); }}>{loading? 'Signing in...' : 'Sign in'}</button>
           <div className="flex justify-between text-sm">
             <Link to="/signup">Create account</Link>
             <Link to="/forgot">Forgot password?</Link>

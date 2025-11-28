@@ -1,7 +1,9 @@
 import { useAuthStore } from "../../store/useAuthStore";
+import { useState } from "react";
 
 export default function Settings() {
   const { user, logout, logoutAll } = useAuthStore();
+  const [busy, setBusy] = useState<'logout'|'logoutAll'|null>(null);
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-6">
@@ -12,8 +14,14 @@ export default function Settings() {
         <div className="text-gray-700">{user?.email}</div>
       </div>
       <div className="flex gap-3">
-        <button className="h-10 px-4 rounded text-white bg-red-600" onClick={()=>logout()}>Logout</button>
-        <button className="h-10 px-4 rounded text-white bg-red-700" onClick={()=>logoutAll()}>Logout all devices</button>
+        <button className="h-10 px-4 rounded text-white bg-red-600 disabled:opacity-60" disabled={busy!==null}
+          onClick={async()=>{ setBusy('logout'); try { await logout(); } finally { setBusy(null); } }}>
+          {busy==='logout' ? 'Logging out...' : 'Logout'}
+        </button>
+        <button className="h-10 px-4 rounded text-white bg-red-700 disabled:opacity-60" disabled={busy!==null}
+          onClick={async()=>{ setBusy('logoutAll'); try { await logoutAll(); } finally { setBusy(null); } }}>
+          {busy==='logoutAll' ? 'Logging out all...' : 'Logout all devices'}
+        </button>
       </div>
       <div className="mt-6 text-gray-400">v1.0.0</div>
     </div>

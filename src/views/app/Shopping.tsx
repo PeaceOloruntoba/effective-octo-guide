@@ -8,6 +8,8 @@ export default function Shopping() {
   const [items, setItems] = useState<any[]>([]);
   const [name, setName] = useState("");
   const [quantity, setQuantity] = useState("");
+  const [adding, setAdding] = useState(false);
+  const [removingId, setRemovingId] = useState<string | number | null>(null);
 
   const load = async () => {
     setLoading(true);
@@ -25,6 +27,7 @@ export default function Shopping() {
   useEffect(() => { load(); }, []);
 
   const addItem = async () => {
+    setAdding(true);
     try {
       await api.shopping.create({ name, quantity });
       setName(""); setQuantity("");
@@ -32,17 +35,18 @@ export default function Shopping() {
       toast.success("Added to shopping");
     } catch (e: any) {
       toast.error(e?.response?.data?.error || "Failed to add item");
-    }
+    } finally { setAdding(false); }
   };
 
   const remove = async (id: string | number) => {
+    setRemovingId(id);
     try {
       await api.shopping.remove(id);
       await load();
       toast.success("Removed");
     } catch (e: any) {
       toast.error(e?.response?.data?.error || "Failed to remove item");
-    }
+    } finally { setRemovingId(null); }
   };
 
   return (
@@ -52,7 +56,7 @@ export default function Shopping() {
         <input className="h-10 rounded border px-3" placeholder="Name" value={name} onChange={(e)=>setName(e.target.value)} />
         <input className="h-10 rounded border px-3" placeholder="Quantity" value={quantity} onChange={(e)=>setQuantity(e.target.value)} />
       </div>
-      <button className="h-10 px-4 rounded text-white" style={{background:'#1f444c'}} onClick={addItem}>Add</button>
+      <button className="h-10 px-4 rounded text-white disabled:opacity-60" style={{background:'#1f444c'}} disabled={adding} onClick={addItem}>{adding? 'Adding...' : 'Add'}</button>
       {error ? <div className="text-red-600 mt-3">{error}</div> : null}
       <div className="mt-5">
         {loading ? (
@@ -67,7 +71,7 @@ export default function Shopping() {
                   <div className="font-medium">{it.name}</div>
                   <div className="text-sm text-gray-600">{it.quantity}</div>
                 </div>
-                <button className="text-red-600" onClick={()=>remove(it.id)}>Remove</button>
+                <button className="text-red-600 disabled:opacity-60" disabled={removingId===it.id} onClick={()=>remove(it.id)}>{removingId===it.id? 'Removing...' : 'Remove'}</button>
               </li>
             ))}
           </ul>

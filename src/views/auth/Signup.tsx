@@ -12,21 +12,28 @@ export default function Signup() {
   const [name, setName] = useState("");
   const [code, setCode] = useState("");
 
+  const [registering, setRegistering] = useState(false);
+  const [verifying, setVerifying] = useState(false);
+
   const onRegister = async () => {
+    setRegistering(true);
     try {
       const res = await register({ email, password, name });
       toast.success("Registered. Verify OTP sent to email.");
       setStep("verify");
       if (res?.otp) toast.info(`OTP: ${res.otp}`);
     } catch {}
+    finally { setRegistering(false); }
   };
 
   const onVerify = async () => {
+    setVerifying(true);
     try {
       await verifyOtp({ email, code });
       toast.success("Account verified. You can sign in now.");
       nav("/login");
     } catch {}
+    finally { setVerifying(false); }
   };
 
   return (
@@ -39,7 +46,7 @@ export default function Signup() {
               <input className="h-10 rounded border px-3" placeholder="Name" value={name} onChange={(e)=>setName(e.target.value)} />
               <input className="h-10 rounded border px-3" placeholder="Email" value={email} onChange={(e)=>setEmail(e.target.value)} />
               <input className="h-10 rounded border px-3" placeholder="Password" type="password" value={password} onChange={(e)=>setPassword(e.target.value)} />
-              <button className="h-10 rounded text-white" style={{background:'#1f444c'}} onClick={onRegister}>Sign up</button>
+              <button className="h-10 rounded text-white disabled:opacity-60" style={{background:'#1f444c'}} disabled={registering} onClick={onRegister}>{registering? 'Signing up...' : 'Sign up'}</button>
               <div className="text-sm"><Link to="/login">Already have an account?</Link></div>
             </div>
           </>
@@ -48,7 +55,7 @@ export default function Signup() {
             <h2 className="text-2xl font-bold mb-4">Verify email</h2>
             <div className="grid gap-3">
               <input className="h-10 rounded border px-3" placeholder="Code" value={code} onChange={(e)=>setCode(e.target.value)} />
-              <button className="h-10 rounded text-white" style={{background:'#1f444c'}} onClick={onVerify}>Verify</button>
+              <button className="h-10 rounded text-white disabled:opacity-60" style={{background:'#1f444c'}} disabled={verifying} onClick={onVerify}>{verifying? 'Verifying...' : 'Verify'}</button>
             </div>
           </>
         )}

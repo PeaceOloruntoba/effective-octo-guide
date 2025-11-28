@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { api } from "../../utils/api";
+import { useAuthStore } from "../../store/useAuthStore";
 
 export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [plan, setPlan] = useState<any>(null);
   const [summary, _setSummary] = useState<{ totals?: { calories: number; protein_grams: number; carbs_grams: number; fat_grams: number } } | null>(null);
+  const { user } = useAuthStore();
 
   useEffect(() => {
     (async () => {
@@ -26,12 +28,14 @@ export default function Dashboard() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-6">
       {error ? <div className="text-red-600 mb-3">{error}</div> : null}
-      <div className="flex flex-col md:flex-row gap-3 mb-6">
-        <Card label="Calories" value={String(summary?.totals?.calories ?? 0)} />
-        <Card label="Protein" value={`${summary?.totals?.protein_grams ?? 0}g`} />
-        <Card label="Carbs" value={`${summary?.totals?.carbs_grams ?? 0}g`} />
-        <Card label="Fat" value={`${summary?.totals?.fat_grams ?? 0}g`} />
-      </div>
+      {user?.role !== 'admin' ? (
+        <div className="flex flex-col md:flex-row gap-3 mb-6">
+          <Card label="Calories" value={String(summary?.totals?.calories ?? 0)} />
+          <Card label="Protein" value={`${summary?.totals?.protein_grams ?? 0}g`} />
+          <Card label="Carbs" value={`${summary?.totals?.carbs_grams ?? 0}g`} />
+          <Card label="Fat" value={`${summary?.totals?.fat_grams ?? 0}g`} />
+        </div>
+      ) : null}
       <h2 className="text-xl font-semibold mb-3">Weekly plan</h2>
       <div className="overflow-x-auto">
         <div className="inline-block min-w-full align-middle">
