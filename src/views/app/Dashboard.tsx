@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import { api, Colors } from "../../utils/api";
+import { api } from "../../utils/api";
 
 export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [plan, setPlan] = useState<any>(null);
-  const [summary, setSummary] = useState<{ totals?: { calories: number; protein_grams: number; carbs_grams: number; fat_grams: number } } | null>(null);
+  const [summary, _setSummary] = useState<{ totals?: { calories: number; protein_grams: number; carbs_grams: number; fat_grams: number } } | null>(null);
 
   useEffect(() => {
     (async () => {
