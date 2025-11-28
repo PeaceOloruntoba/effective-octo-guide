@@ -1,4 +1,4 @@
-import { Link, NavLink, Outlet } from "react-router";
+import { Link, NavLink, Outlet } from "react-router-dom";
 import { Toaster } from "sonner";
 import { Colors } from "../utils/api";
 
@@ -9,12 +9,12 @@ export function Layout() {
         <div className="mx-auto max-w-6xl px-4 h-14 flex items-center justify-between">
           <Link to="/" className="font-bold text-white">Bunzi</Link>
           <nav className="flex items-center gap-4 text-sm">
-            <NavLink to="/app/dashboard" className={({isActive}) => `text-${isActive?"["+Colors.accent+"]":"[#eaeaea]"}`}>Dashboard</NavLink>
-            <NavLink to="/app/recipes" className="text-[#eaeaea]">Recipes</NavLink>
-            <NavLink to="/app/nutrition" className="text-[#eaeaea]">Nutrition</NavLink>
-            <NavLink to="/app/shopping" className="text-[#eaeaea]">Shopping</NavLink>
-            <NavLink to="/app/pantry" className="text-[#eaeaea]">Pantry</NavLink>
-            <NavLink to="/app/settings" className="text-[#eaeaea]">Settings</NavLink>
+            <NavLink to="/app/dashboard" style={({isActive}) => ({ color: isActive ? Colors.accent : "#eaeaea" })}>Dashboard</NavLink>
+            <NavLink to="/app/recipes" style={({isActive}) => ({ color: isActive ? Colors.accent : "#eaeaea" })}>Recipes</NavLink>
+            <NavLink to="/app/nutrition" style={({isActive}) => ({ color: isActive ? Colors.accent : "#eaeaea" })}>Nutrition</NavLink>
+            <NavLink to="/app/shopping" style={({isActive}) => ({ color: isActive ? Colors.accent : "#eaeaea" })}>Shopping</NavLink>
+            <NavLink to="/app/pantry" style={({isActive}) => ({ color: isActive ? Colors.accent : "#eaeaea" })}>Pantry</NavLink>
+            <NavLink to="/app/settings" style={({isActive}) => ({ color: isActive ? Colors.accent : "#eaeaea" })}>Settings</NavLink>
           </nav>
         </div>
       </header>
@@ -33,8 +33,8 @@ export function AdminLayout() {
         <div className="mx-auto max-w-6xl px-4 h-14 flex items-center justify-between">
           <Link to="/" className="font-bold text-white">Bunzi Admin</Link>
           <nav className="flex items-center gap-4 text-sm">
-            <NavLink to="/admin/users" className="text-[#eaeaea]">Users</NavLink>
-            <NavLink to="/admin/recipes" className="text-[#eaeaea]">Recipes</NavLink>
+            <NavLink to="/admin/users" style={({isActive}) => ({ color: isActive ? Colors.accent : "#eaeaea" })}>Users</NavLink>
+            <NavLink to="/admin/recipes" style={({isActive}) => ({ color: isActive ? Colors.accent : "#eaeaea" })}>Recipes</NavLink>
           </nav>
         </div>
       </header>

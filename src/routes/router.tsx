@@ -12,6 +12,7 @@ import Settings from "../views/app/Settings";
 import AdminUsers from "../views/admin/Users";
 import AdminRecipes from "../views/admin/Recipes";
 import { useAuthStore } from "../store/useAuthStore";
+import type { JSX } from "react";
 
 function RequireAuth({ children }: { children: JSX.Element }) {
   const { token, hydrated } = useAuthStore();
