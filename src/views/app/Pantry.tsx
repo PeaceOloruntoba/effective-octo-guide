@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { api } from "../../utils/api";
 import { toast } from "sonner";
+import { Spinner } from "../../components/Spinner";
 
 export default function Pantry() {
   const [loading, setLoading] = useState(true);
@@ -60,7 +61,9 @@ export default function Pantry() {
         <input className="h-10 rounded border px-3" placeholder="Unit" value={unit} onChange={(e)=>setUnit(e.target.value)} />
         <input className="h-10 rounded border px-3" placeholder="Expires at (YYYY-MM-DD)" value={expiresAt} onChange={(e)=>setExpiresAt(e.target.value)} />
       </div>
-      <button className="h-10 px-4 rounded text-white disabled:opacity-60" style={{background:'#1f444c'}} disabled={adding} onClick={addItem}>{adding? 'Adding...' : 'Add'}</button>
+      <button className="h-10 px-4 rounded text-white disabled:opacity-60 flex items-center gap-2" style={{background:'#1f444c'}} disabled={adding} onClick={addItem}>
+        {adding ? (<><Spinner size={16} color="#fff" /><span>Adding...</span></>) : 'Add'}
+      </button>
       {error ? <div className="text-red-600 mt-3">{error}</div> : null}
       <div className="mt-5">
         {loading ? (
@@ -75,7 +78,9 @@ export default function Pantry() {
                   <div className="font-medium">{it.name}</div>
                   <div className="text-sm text-gray-600">{[it.quantity, it.unit].filter(Boolean).join(" ")}</div>
                 </div>
-                <button className="text-red-600 disabled:opacity-60" disabled={removingId===it.id} onClick={()=>remove(it.id)}>{removingId===it.id? 'Removing...' : 'Remove'}</button>
+                <button className="text-red-600 disabled:opacity-60 inline-flex items-center gap-2" disabled={removingId===it.id} onClick={()=>remove(it.id)}>
+                  {removingId===it.id? (<><Spinner size={14} color="#b91c1c" /><span>Removing...</span></>) : 'Remove'}
+                </button>
               </li>
             ))}
           </ul>

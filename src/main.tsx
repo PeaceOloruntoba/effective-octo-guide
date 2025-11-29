@@ -4,6 +4,7 @@ import './index.css'
 import { RouterProvider } from 'react-router'
 import { router } from './routes/router'
 import { useAuthStore } from './store/useAuthStore'
+import { Toaster } from 'sonner'
 
 function Bootstrap() {
   const { hydrated, bootstrap } = useAuthStore();
@@ -13,6 +14,7 @@ function Bootstrap() {
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
+    <Toaster position='top-right' richColors />
     <Bootstrap />
   </StrictMode>,
 )

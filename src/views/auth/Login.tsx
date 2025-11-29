@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router";
 import { toast } from "sonner";
 import { useAuthStore } from "../../store/useAuthStore";
+import { Spinner } from "../../components/Spinner";
 
 export default function Login() {
   const nav = useNavigate();
@@ -20,7 +21,9 @@ export default function Login() {
         <div className="grid gap-3">
           <input className="h-10 rounded border px-3" placeholder="Email" value={email} onChange={(e)=>setEmail(e.target.value)} />
           <input className="h-10 rounded border px-3" placeholder="Password" type="password" value={password} onChange={(e)=>setPassword(e.target.value)} />
-          <button className="h-10 rounded text-white disabled:opacity-60" style={{background:'#1f444c'}} disabled={loading} onClick={async()=>{ clearError(); await login({email,password}).catch(()=>{}); }}>{loading? 'Signing in...' : 'Sign in'}</button>
+          <button className="h-10 rounded text-white disabled:opacity-60 flex items-center justify-center gap-2" style={{background:'#1f444c'}} disabled={loading} onClick={async()=>{ clearError(); await login({email,password}).catch(()=>{}); }}>
+            {loading ? (<><Spinner size={16} color="#fff" /><span>Signing in...</span></>) : 'Sign in'}
+          </button>
           <div className="flex justify-between text-sm">
             <Link to="/signup">Create account</Link>
             <Link to="/forgot">Forgot password?</Link>
