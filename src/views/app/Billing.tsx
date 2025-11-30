@@ -1,12 +1,15 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useBillingStore } from "../../store/useBillingStore";
 import { Spinner } from "../../components/Spinner";
 import { toast } from "sonner";
 
 export default function Billing() {
   const { loading, status, plans, fetchStatus, fetchPlans, checkout, cancel } = useBillingStore();
+  const didInit = useRef(false);
 
   useEffect(() => {
+    if (didInit.current) return;
+    didInit.current = true;
     fetchStatus().catch(() => {});
     fetchPlans().catch(() => {});
     const reason = localStorage.getItem("paywall_reason");
@@ -15,8 +18,6 @@ export default function Billing() {
       localStorage.removeItem("paywall_reason");
     }
   }, []);
-
-  console.log(plans)
 
   return (
     <div className="p-4 max-w-2xl mx-auto">

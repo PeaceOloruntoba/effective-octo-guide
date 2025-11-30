@@ -32,11 +32,13 @@ http.interceptors.response.use(
   async (error) => {
     const original = error?.config;
     if (error?.response?.status === 402) {
-      try {
-        const msg = error?.response?.data?.errorMessage || 'Subscription required';
-        localStorage.setItem('paywall_reason', msg);
-      } catch {}
-      if (location.pathname !== '/app/billing') {
+      const path = location.pathname;
+      // Avoid redirect loops if already on billing pages
+      if (path !== '/app/billing' && path !== '/app/billing/processing') {
+        try {
+          const msg = error?.response?.data?.errorMessage || 'Subscription required';
+          localStorage.setItem('paywall_reason', msg);
+        } catch {}
         location.assign('/app/billing');
       }
       return Promise.reject(error);

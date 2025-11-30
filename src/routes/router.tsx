@@ -10,6 +10,7 @@ import Pantry from "../views/app/Pantry";
 import Shopping from "../views/app/Shopping";
 import Settings from "../views/app/Settings";
 import Billing from "../views/app/Billing";
+import Processing from "../views/app/Processing";
 import AdminUsers from "../views/admin/Users";
 import AdminRecipes from "../views/admin/Recipes";
 import AdminDashboard from "../views/admin/Dashboard";
@@ -53,6 +54,7 @@ export const router = createBrowserRouter([
       { path: "shopping", element: <Shopping /> },
       { path: "settings", element: <Settings /> },
       { path: "billing", element: <Billing /> },
+      { path: "billing/processing", element: <Processing /> },
     ],
   },
   {
