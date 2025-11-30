@@ -46,7 +46,7 @@ export default function Shopping() {
         <input className="h-10 rounded border px-3" placeholder="Name" value={name} onChange={(e)=>setName(e.target.value)} />
         <input className="h-10 rounded border px-3" placeholder="Quantity" value={quantity} onChange={(e)=>setQuantity(e.target.value)} />
       </div>
-      <button className="h-10 px-4 rounded text-white disabled:opacity-60 inline-flex items-center gap-2" style={{background:'#1f444c'}} disabled={adding} onClick={addItem}>
+      <button className="h-10 px-4 rounded text-white disabled:opacity-60 inline-flex items-center gap-2 bg-primary" disabled={adding} onClick={addItem}>
         {adding? (<><Spinner size={16} color="#fff" /><span>Adding...</span></>) : 'Add'}
       </button>
       {error ? <div className="text-red-600 mt-3">{error}</div> : null}

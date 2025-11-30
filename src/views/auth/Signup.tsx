@@ -47,7 +47,7 @@ export default function Signup() {
               <input className="h-10 rounded border px-3" placeholder="Name" value={name} onChange={(e)=>setName(e.target.value)} />
               <input className="h-10 rounded border px-3" placeholder="Email" value={email} onChange={(e)=>setEmail(e.target.value)} />
               <input className="h-10 rounded border px-3" placeholder="Password" type="password" value={password} onChange={(e)=>setPassword(e.target.value)} />
-              <button className="h-10 rounded text-white disabled:opacity-60 flex items-center justify-center gap-2" style={{background:'#1f444c'}} disabled={registering} onClick={onRegister}>
+              <button className="h-10 rounded text-white disabled:opacity-60 flex items-center justify-center gap-2 bg-primary" disabled={registering} onClick={onRegister}>
                 {registering ? (<><Spinner size={16} color="#fff" /><span>Signing up...</span></>) : 'Sign up'}
               </button>
               <div className="text-sm"><Link to="/login">Already have an account?</Link></div>
@@ -58,7 +58,7 @@ export default function Signup() {
             <h2 className="text-2xl font-bold mb-4">Verify email</h2>
             <div className="grid gap-3">
               <input className="h-10 rounded border px-3" placeholder="Code" value={code} onChange={(e)=>setCode(e.target.value)} />
-              <button className="h-10 rounded text-white disabled:opacity-60 flex items-center justify-center gap-2" style={{background:'#1f444c'}} disabled={verifying} onClick={onVerify}>
+              <button className="h-10 rounded text-white disabled:opacity-60 flex items-center justify-center gap-2 bg-primary" disabled={verifying} onClick={onVerify}>
                 {verifying ? (<><Spinner size={16} color="#fff" /><span>Verifying...</span></>) : 'Verify'}
               </button>
             </div>

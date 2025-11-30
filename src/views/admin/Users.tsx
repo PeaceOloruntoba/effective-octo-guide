@@ -21,7 +21,7 @@ export default function AdminUsers() {
     <div className="mx-auto max-w-6xl px-4 py-6">
       <div className="flex items-center gap-2 mb-4">
         <input className="h-10 rounded border px-3 w-full max-w-md" placeholder="Search email" value={q} onChange={(e)=>setQ(e.target.value)} />
-        <button className="h-10 px-3 rounded text-white" style={{background:'#1f444c'}} onClick={load}>Search</button>
+        <button className="h-10 px-3 rounded text-white bg-primary" onClick={load}>Search</button>
       </div>
       {error ? <div className="text-red-600 mb-3">{error}</div> : null}
       {loading ? <div>Loading...</div> : (

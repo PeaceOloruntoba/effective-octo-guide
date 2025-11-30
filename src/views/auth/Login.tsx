@@ -26,7 +26,7 @@ export default function Login() {
         <div className="grid gap-3">
           <input className="h-10 rounded border px-3" placeholder="Email" value={email} onChange={(e)=>setEmail(e.target.value)} />
           <input className="h-10 rounded border px-3" placeholder="Password" type="password" value={password} onChange={(e)=>setPassword(e.target.value)} />
-          <button className="h-10 rounded text-white disabled:opacity-60 flex items-center justify-center gap-2" style={{background:'#1f444c'}} disabled={loading} onClick={async()=>{ clearError(); await login({email,password}).catch(()=>{}); }}>
+          <button className="h-10 rounded text-white disabled:opacity-60 flex items-center justify-center gap-2 bg-primary" disabled={loading} onClick={async()=>{ clearError(); await login({email,password}).catch(()=>{}); }}>
             {loading ? (<><Spinner size={16} color="#fff" /><span>Signing in...</span></>) : 'Sign in'}
           </button>
           <div className="flex justify-between text-sm">

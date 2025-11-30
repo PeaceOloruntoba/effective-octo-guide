@@ -37,7 +37,7 @@ export default function AdminDashboard() {
 
 function Card({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-md border p-3" style={{ background: "#fff" }}>
+    <div className="rounded-md border p-3 bg-white">
       <div className="text-xs text-gray-600 mb-1">{label}</div>
       <div className="text-lg font-semibold">{value}</div>
     </div>

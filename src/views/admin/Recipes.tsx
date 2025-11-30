@@ -54,7 +54,7 @@ export default function AdminRecipes() {
         <input className="h-10 rounded border px-3" placeholder="Category" value={category} onChange={(e)=>setCategory(e.target.value)} />
         <input className="h-10 rounded border px-3" type="file" accept="image/*" onChange={(e)=>setImage(e.target.files?.[0] || null)} />
       </div>
-      <button className="h-10 px-4 rounded text-white" style={{background:'#1f444c'}} onClick={createRecipe}>Create</button>
+      <button className="h-10 px-4 rounded text-white bg-primary" onClick={createRecipe}>Create</button>
 
       {error ? <div className="text-red-600 mt-4">{error}</div> : null}
 

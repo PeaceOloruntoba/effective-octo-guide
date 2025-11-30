@@ -51,7 +51,7 @@ export default function Pantry() {
         <input className="h-10 rounded border px-3" placeholder="Unit" value={unit} onChange={(e)=>setUnit(e.target.value)} />
         <input className="h-10 rounded border px-3" placeholder="Expires at (YYYY-MM-DD)" value={expiresAt} onChange={(e)=>setExpiresAt(e.target.value)} />
       </div>
-      <button className="h-10 px-4 rounded text-white disabled:opacity-60 flex items-center gap-2" style={{background:'#1f444c'}} disabled={adding} onClick={addItem}>
+      <button className="h-10 px-4 rounded text-white disabled:opacity-60 flex items-center gap-2 bg-primary" disabled={adding} onClick={addItem}>
         {adding ? (<><Spinner size={16} color="#fff" /><span>Adding...</span></>) : 'Add'}
       </button>
       {error ? <div className="text-red-600 mt-3">{error}</div> : null}

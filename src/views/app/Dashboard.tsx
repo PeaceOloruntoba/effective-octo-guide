@@ -32,7 +32,7 @@ export default function Dashboard() {
       ) : null}
       <h2 className="text-xl font-semibold mb-3">Weekly plan</h2>
       <div className="mb-3">
-        <button className="h-9 px-3 rounded text-white" style={{background:'#1f444c'}} onClick={()=>{ setWorkingPlan(plan || {}); setShowPlanner(true); }}>Create / Update Meal Plan</button>
+        <button className="h-9 px-3 rounded text-white bg-primary" onClick={()=>{ setWorkingPlan(plan || {}); setShowPlanner(true); }}>Create / Update Meal Plan</button>
       </div>
       <div className="overflow-x-auto">
         <div className="inline-block min-w-full align-middle">
@@ -73,7 +73,7 @@ export default function Dashboard() {
 
 function Card({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex-1 rounded-md border p-3" style={{ background: "#fff" }}>
+    <div className="flex-1 rounded-md border p-3 bg-white">
       <div className="text-xs text-gray-600 mb-1">{label}</div>
       <div className="text-lg font-semibold">{value}</div>
     </div>
@@ -135,7 +135,7 @@ function PlannerModal({ plan, setPlan, recipes, onClose, onSave }: { plan: any; 
         </div>
         <div className="mt-4 flex justify-end gap-2">
           <button className="px-3 h-10 rounded border" onClick={onClose}>Cancel</button>
-          <button className="px-3 h-10 rounded text-white" style={{background:'#1f444c'}} onClick={onSave}>Save</button>
+          <button className="px-3 h-10 rounded text-white bg-primary" onClick={onSave}>Save</button>
         </div>
       </div>
     </div>

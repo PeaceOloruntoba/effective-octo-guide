@@ -53,9 +53,3 @@ http.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
-export const Colors = {
-  primary: "#1f444c",
-  accent: "#e9be6f",
-  accent2: "#c77138",
-};
