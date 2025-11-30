@@ -13,6 +13,7 @@ export default function Login() {
   useEffect(() => { if (!hydrated) bootstrap(); }, [hydrated]);
   useEffect(() => {
     if (token && hydrated) {
+      console.log(user)
       if (user?.role === 'admin') nav('/admin/dashboard', { replace: true });
       else nav("/app/dashboard", { replace: true });
     }

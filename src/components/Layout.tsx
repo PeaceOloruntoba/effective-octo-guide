@@ -13,6 +13,7 @@ export function Layout() {
             <NavLink to="/app/nutrition" className={({isActive}) => isActive ? "text-accent" : "text-white/90"}>Nutrition</NavLink>
             <NavLink to="/app/shopping" className={({isActive}) => isActive ? "text-accent" : "text-white/90"}>Shopping</NavLink>
             <NavLink to="/app/pantry" className={({isActive}) => isActive ? "text-accent" : "text-white/90"}>Pantry</NavLink>
+            <NavLink to="/app/billing" className={({isActive}) => isActive ? "text-accent" : "text-white/90"}>Billing</NavLink>
             <NavLink to="/app/settings" className={({isActive}) => isActive ? "text-accent" : "text-white/90"}>Settings</NavLink>
           </nav>
         </div>
@@ -34,6 +35,7 @@ export function AdminLayout() {
           <nav className="flex items-center gap-4 text-sm">
             <NavLink to="/admin/users" className={({isActive}) => isActive ? "text-accent" : "text-white/90"}>Users</NavLink>
             <NavLink to="/admin/recipes" className={({isActive}) => isActive ? "text-accent" : "text-white/90"}>Recipes</NavLink>
+            <NavLink to="/admin/subscriptions" className={({isActive}) => isActive ? "text-accent" : "text-white/90"}>Subscriptions</NavLink>
             <NavLink to="/admin/settings" className={({isActive}) => isActive ? "text-accent" : "text-white/90"}>Settings</NavLink>
           </nav>
         </div>

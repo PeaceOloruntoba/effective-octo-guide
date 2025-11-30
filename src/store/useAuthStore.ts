@@ -79,7 +79,7 @@ export const useAuthStore = create<State & Actions>((set, get) => ({
       if (!token) throw new Error("No token");
       setAccessToken(token);
       set({ token });
-      await get().fetchMe();
+      set({ user: data.user as User });
     } catch (e: any) {
       set({ error: handleError(e, { fallbackMessage: "Login failed" }) });
       throw e;

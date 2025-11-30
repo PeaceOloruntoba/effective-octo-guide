@@ -9,12 +9,14 @@ import Nutrition from "../views/app/Nutrition";
 import Pantry from "../views/app/Pantry";
 import Shopping from "../views/app/Shopping";
 import Settings from "../views/app/Settings";
+import Billing from "../views/app/Billing";
 import AdminUsers from "../views/admin/Users";
 import AdminRecipes from "../views/admin/Recipes";
 import AdminDashboard from "../views/admin/Dashboard";
 import { useAuthStore } from "../store/useAuthStore";
 import type { JSX } from "react";
 import AdminSettings from "../views/admin/Settings";
+import AdminSubscriptions from "../views/admin/Subscriptions";
 
 function RequireAuth({ children }: { children: JSX.Element }) {
   const { token, hydrated } = useAuthStore();
@@ -50,6 +52,7 @@ export const router = createBrowserRouter([
       { path: "pantry", element: <Pantry /> },
       { path: "shopping", element: <Shopping /> },
       { path: "settings", element: <Settings /> },
+      { path: "billing", element: <Billing /> },
     ],
   },
   {
@@ -64,6 +67,7 @@ export const router = createBrowserRouter([
       { path: "dashboard", element: <AdminDashboard /> },
       { path: "users", element: <AdminUsers /> },
       { path: "recipes", element: <AdminRecipes /> },
+      { path: "subscriptions", element: <AdminSubscriptions /> },
       { path: "settings", element: <AdminSettings /> },
     ],
   },

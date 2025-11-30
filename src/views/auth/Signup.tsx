@@ -31,7 +31,7 @@ export default function Signup() {
     setVerifying(true);
     try {
       await verifyOtp({ email, code });
-      toast.success("Account verified. You can sign in now.");
+      toast.success("Account verified. Your 7-day trial has begun. You can sign in now.");
       nav("/login");
     } catch {}
     finally { setVerifying(false); }

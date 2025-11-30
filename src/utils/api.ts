@@ -31,6 +31,16 @@ http.interceptors.response.use(
   (r) => r,
   async (error) => {
     const original = error?.config;
+    if (error?.response?.status === 402) {
+      try {
+        const msg = error?.response?.data?.errorMessage || 'Subscription required';
+        localStorage.setItem('paywall_reason', msg);
+      } catch {}
+      if (location.pathname !== '/app/billing') {
+        location.assign('/app/billing');
+      }
+      return Promise.reject(error);
+    }
     if (error?.response?.status === 401 && original && !original.__isRetryRequest) {
       try {
         if (!refreshing) {
