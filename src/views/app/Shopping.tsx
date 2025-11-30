@@ -10,21 +10,18 @@ export default function Shopping() {
   const [adding, setAdding] = useState(false);
   const [removingId, setRemovingId] = useState<string | number | null>(null);
 
-  const load = async () => {
-    await fetch();
-  };
-
-  useEffect(() => { load(); }, []);
+  useEffect(() => { fetch(); }, []);
 
   const addItem = async () => {
+    if (!name.trim()) return toast.error("Name is required");
     setAdding(true);
     try {
       await create({ name, quantity } as any);
       setName(""); setQuantity("");
-      await load();
+      await fetch();
       toast.success("Added to shopping");
-    } catch (e: any) {
-      // error toast handled in store
+    } catch {
+      // error handled in store
     } finally { setAdding(false); }
   };
 
@@ -32,39 +29,62 @@ export default function Shopping() {
     setRemovingId(id);
     try {
       await removeItem(id);
-      await load();
+      await fetch();
       toast.success("Removed");
-    } catch (e: any) {
-      // error toast handled in store
     } finally { setRemovingId(null); }
   };
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-6">
-      <h2 className="text-xl font-semibold mb-3">Add to shopping</h2>
-      <div className="grid gap-2 mb-4 sm:grid-cols-2 lg:grid-cols-3">
-        <input className="h-10 rounded border px-3" placeholder="Name" value={name} onChange={(e)=>setName(e.target.value)} />
-        <input className="h-10 rounded border px-3" placeholder="Quantity" value={quantity} onChange={(e)=>setQuantity(e.target.value)} />
+    <div className="mx-auto max-w-3xl px-4 py-6">
+      <h2 className="text-2xl font-bold mb-5 text-gray-900">Shopping List</h2>
+
+      {/* Add Item Form */}
+      <div className="grid gap-3 sm:grid-cols-2 mb-4">
+        <input
+          className="h-12 px-3 rounded-lg border border-gray-300 focus:ring-1 focus:ring-primary focus:outline-none"
+          placeholder="Name"
+          value={name}
+          onChange={(e)=>setName(e.target.value)}
+        />
+        <input
+          className="h-12 px-3 rounded-lg border border-gray-300 focus:ring-1 focus:ring-primary focus:outline-none"
+          placeholder="Quantity"
+          value={quantity}
+          onChange={(e)=>setQuantity(e.target.value)}
+        />
       </div>
-      <button className="h-10 px-4 rounded text-white disabled:opacity-60 inline-flex items-center gap-2 bg-primary" disabled={adding} onClick={addItem}>
-        {adding? (<><Spinner size={16} color="#fff" /><span>Adding...</span></>) : 'Add'}
+      <button
+        className="h-12 w-full sm:w-auto px-4 rounded-lg bg-primary text-white font-semibold flex items-center justify-center gap-2 hover:bg-primary/90 transition disabled:opacity-60"
+        disabled={adding}
+        onClick={addItem}
+      >
+        {adding ? (<><Spinner size={16} color="#fff" /><span>Adding...</span></>) : "Add Item"}
       </button>
-      {error ? <div className="text-red-600 mt-3">{error}</div> : null}
-      <div className="mt-5">
+
+      {error && <div className="text-red-600 mt-3">{error}</div>}
+
+      {/* Shopping Items */}
+      <div className="mt-6">
         {loading ? (
-          <div>Loading...</div>
+          <div className="flex items-center gap-2 text-gray-600"><Spinner size={16} /><span>Loading...</span></div>
         ) : items.length === 0 ? (
-          <div className="text-gray-500">No shopping items</div>
+          <div className="text-gray-500 text-center py-6 rounded-lg border border-gray-200 bg-gray-50">
+            No items in your shopping list
+          </div>
         ) : (
-          <ul className="divide-y">
+          <ul className="space-y-3">
             {items.map((it) => (
-              <li key={it.id} className="py-3 flex items-center justify-between">
-                <div>
-                  <div className="font-medium">{it.name}</div>
-                  <div className="text-sm text-gray-600">{it.quantity}</div>
+              <li key={it.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-lg border bg-white shadow-sm hover:shadow-md transition">
+                <div className="flex-1 mb-2 sm:mb-0">
+                  <div className="font-semibold text-gray-800">{it.name}</div>
+                  <div className="text-gray-600 text-sm">{it.quantity}</div>
                 </div>
-                <button className="text-red-600 disabled:opacity-60 inline-flex items-center gap-2" disabled={removingId===it.id} onClick={()=>onRemove(it.id)}>
-                  {removingId===it.id? (<><Spinner size={14} color="#b91c1c" /><span>Removing...</span></>) : 'Remove'}
+                <button
+                  className="inline-flex items-center gap-2 text-red-600 font-medium hover:underline disabled:opacity-60"
+                  disabled={removingId === it.id}
+                  onClick={() => onRemove(it.id)}
+                >
+                  {removingId === it.id ? (<><Spinner size={14} color="#b91c1c" /><span>Removing...</span></>) : "Remove"}
                 </button>
               </li>
             ))}
