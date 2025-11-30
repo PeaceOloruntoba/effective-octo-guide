@@ -1,34 +1,21 @@
 import { useEffect, useState } from "react";
-import { api } from "../../utils/api";
 import { toast } from "sonner";
+import { useAdminStore } from "../../store/useAdminStore";
 
 export default function AdminUsers() {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [items, setItems] = useState<any[]>([]);
+  const { users: items, loading, error, listUsers, setRole, block, unblock, forceLogoutAll } = useAdminStore();
   const [q, setQ] = useState("");
 
   const load = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await api.admin.users(q || undefined);
-      setItems(data || []);
-    } catch (e: any) {
-      setError(e?.response?.data?.error || "Failed to load users");
-    } finally {
-      setLoading(false);
-    }
+    await listUsers(q || undefined);
   };
 
   useEffect(() => { load(); }, []);
 
-  const setRole = async (id: string, role: string) => {
-    try { await api.admin.setRole(id, role); toast.success("Role updated"); load(); } catch { toast.error("Failed"); }
-  };
-  const block = async (id: string) => { try { await api.admin.block(id); toast.success("Blocked"); load(); } catch { toast.error("Failed"); } };
-  const unblock = async (id: string) => { try { await api.admin.unblock(id); toast.success("Unblocked"); load(); } catch { toast.error("Failed"); } };
-  const forceLogoutAll = async (id: string) => { try { await api.admin.forceLogoutAll(id); toast.success("Logged out all"); } catch { toast.error("Failed"); } };
+  const onSetRole = async (id: string, role: string) => { try { await setRole(id, role); toast.success("Role updated"); load(); } catch { /* toast handled */ } };
+  const onBlock = async (id: string) => { try { await block(id); toast.success("Blocked"); load(); } catch { /* toast handled */ } };
+  const onUnblock = async (id: string) => { try { await unblock(id); toast.success("Unblocked"); load(); } catch { /* toast handled */ } };
+  const onForceLogoutAll = async (id: string) => { try { await forceLogoutAll(id); toast.success("Logged out all"); } catch { /* toast handled */ } };
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-6">
@@ -54,12 +41,12 @@ export default function AdminUsers() {
                 <td className="p-2">{u.name || '-'}</td>
                 <td className="p-2">{u.role}</td>
                 <td className="p-2 flex flex-wrap gap-2">
-                  <button className="px-2 py-1 rounded border" onClick={()=>setRole(u.id, u.role==='admin'?'user':'admin')}>Set {u.role==='admin'?'user':'admin'}</button>
-                  <button className="px-2 py-1 rounded border" onClick={()=>forceLogoutAll(u.id)}>Logout all</button>
+                  <button className="px-2 py-1 rounded border" onClick={()=>onSetRole(u.id, u.role==='admin'?'user':'admin')}>Set {u.role==='admin'?'user':'admin'}</button>
+                  <button className="px-2 py-1 rounded border" onClick={()=>onForceLogoutAll(u.id)}>Logout all</button>
                   {u.blocked ? (
-                    <button className="px-2 py-1 rounded border" onClick={()=>unblock(u.id)}>Unblock</button>
+                    <button className="px-2 py-1 rounded border" onClick={()=>onUnblock(u.id)}>Unblock</button>
                   ) : (
-                    <button className="px-2 py-1 rounded border" onClick={()=>block(u.id)}>Block</button>
+                    <button className="px-2 py-1 rounded border" onClick={()=>onBlock(u.id)}>Block</button>
                   )}
                 </td>
               </tr>

@@ -1,28 +1,14 @@
 import { useEffect, useState } from "react";
-import { api } from "../../utils/api";
 import { useAuthStore } from "../../store/useAuthStore";
+import { useMealsStore } from "../../store/useMealsStore";
 
 export default function Dashboard() {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [plan, setPlan] = useState<any>(null);
+  const { plan, loading, error, fetchPlan } = useMealsStore();
   const [summary, _setSummary] = useState<{ totals?: { calories: number; protein_grams: number; carbs_grams: number; fat_grams: number } } | null>(null);
   const { user } = useAuthStore();
 
   useEffect(() => {
-    (async () => {
-      try {
-        const [p] = await Promise.all([
-          api.meals.getPlan().catch(() => null),
-        ]);
-        setPlan(p);
-        // Optionally call stats summary if available in web API list endpoint
-      } catch (e: any) {
-        setError(e?.response?.data?.error || "Failed to load dashboard");
-      } finally {
-        setLoading(false);
-      }
-    })();
+    fetchPlan();
   }, []);
 
   return (

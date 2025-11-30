@@ -1,30 +1,19 @@
 import { useEffect, useMemo, useState } from "react";
-import { api } from "../../utils/api";
+import { useRecipesStore } from "../../store/useRecipesStore";
 
 export default function Recipes() {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [recipes, setRecipes] = useState<{ id: number; name: string; category?: string; image_url?: string }[]>([]);
+  const { items, loading, error, fetch } = useRecipesStore();
   const [q, setQ] = useState("");
 
   useEffect(() => {
-    (async () => {
-      try {
-        const data = await api.recipes.list();
-        setRecipes(data || []);
-      } catch (e: any) {
-        setError(e?.response?.data?.error || "Failed to load recipes");
-      } finally {
-        setLoading(false);
-      }
-    })();
+    fetch();
   }, []);
 
   const filtered = useMemo(() => {
     const term = q.trim().toLowerCase();
-    if (!term) return recipes;
-    return recipes.filter((r) => r.name.toLowerCase().includes(term));
-  }, [q, recipes]);
+    if (!term) return items;
+    return items.filter((r) => r.name.toLowerCase().includes(term));
+  }, [q, items]);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-6">

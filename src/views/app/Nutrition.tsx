@@ -1,29 +1,15 @@
 import { useEffect, useState } from "react";
-import { api } from "../../utils/api";
+import { useNutritionStore } from "../../store/useNutritionStore";
+import { useRecipesStore } from "../../store/useRecipesStore";
 
 export default function Nutrition() {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [items, setItems] = useState<any[]>([]);
+  const { items, loading, error, fetch } = useNutritionStore();
   const [recipeId, setRecipeId] = useState<string>("");
-  const [recipes, setRecipes] = useState<{ id: number; name: string; image_url?: string }[]>([]);
+  const { items: recipes, fetch: fetchRecipes } = useRecipesStore();
 
   const load = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const rid = recipeId ? Number(recipeId) : undefined;
-      const [data, recs] = await Promise.all([
-        api.nutrition.list(rid),
-        api.recipes.list(),
-      ]);
-      setItems(data || []);
-      setRecipes(recs || []);
-    } catch (e: any) {
-      setError(e?.response?.data?.error || "Failed to load nutrition");
-    } finally {
-      setLoading(false);
-    }
+    const rid = recipeId ? Number(recipeId) : undefined;
+    await Promise.all([fetch(rid), recipes.length ? Promise.resolve() : fetchRecipes()]);
   };
 
   useEffect(() => { load(); }, []);

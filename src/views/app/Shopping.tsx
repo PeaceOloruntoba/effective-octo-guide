@@ -1,28 +1,17 @@
 import { useEffect, useState } from "react";
-import { api } from "../../utils/api";
 import { toast } from "sonner";
 import { Spinner } from "../../components/Spinner";
+import { useShoppingStore } from "../../store/useShoppingStore";
 
 export default function Shopping() {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [items, setItems] = useState<any[]>([]);
+  const { items, loading, error, fetch, create, remove: removeItem } = useShoppingStore();
   const [name, setName] = useState("");
   const [quantity, setQuantity] = useState("");
   const [adding, setAdding] = useState(false);
   const [removingId, setRemovingId] = useState<string | number | null>(null);
 
   const load = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await api.shopping.list();
-      setItems(data || []);
-    } catch (e: any) {
-      setError(e?.response?.data?.error || "Failed to load shopping list");
-    } finally {
-      setLoading(false);
-    }
+    await fetch();
   };
 
   useEffect(() => { load(); }, []);
@@ -30,23 +19,23 @@ export default function Shopping() {
   const addItem = async () => {
     setAdding(true);
     try {
-      await api.shopping.create({ name, quantity });
+      await create({ name, quantity } as any);
       setName(""); setQuantity("");
       await load();
       toast.success("Added to shopping");
     } catch (e: any) {
-      toast.error(e?.response?.data?.error || "Failed to add item");
+      // error toast handled in store
     } finally { setAdding(false); }
   };
 
-  const remove = async (id: string | number) => {
+  const onRemove = async (id: string | number) => {
     setRemovingId(id);
     try {
-      await api.shopping.remove(id);
+      await removeItem(id);
       await load();
       toast.success("Removed");
     } catch (e: any) {
-      toast.error(e?.response?.data?.error || "Failed to remove item");
+      // error toast handled in store
     } finally { setRemovingId(null); }
   };
 
@@ -74,7 +63,7 @@ export default function Shopping() {
                   <div className="font-medium">{it.name}</div>
                   <div className="text-sm text-gray-600">{it.quantity}</div>
                 </div>
-                <button className="text-red-600 disabled:opacity-60 inline-flex items-center gap-2" disabled={removingId===it.id} onClick={()=>remove(it.id)}>
+                <button className="text-red-600 disabled:opacity-60 inline-flex items-center gap-2" disabled={removingId===it.id} onClick={()=>onRemove(it.id)}>
                   {removingId===it.id? (<><Spinner size={14} color="#b91c1c" /><span>Removing...</span></>) : 'Remove'}
                 </button>
               </li>

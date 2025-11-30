@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
-import { api } from "../../utils/api";
 import { toast } from "sonner";
 import { Spinner } from "../../components/Spinner";
+import { usePantryStore } from "../../store/usePantryStore";
 
 export default function Pantry() {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [items, setItems] = useState<any[]>([]);
+  const { items, loading, error, fetch, create, remove: removeItem } = usePantryStore();
   const [name, setName] = useState("");
   const [quantity, setQuantity] = useState("");
   const [unit, setUnit] = useState("");
@@ -15,16 +13,7 @@ export default function Pantry() {
   const [removingId, setRemovingId] = useState<string | number | null>(null);
 
   const load = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await api.pantry.list();
-      setItems(data || []);
-    } catch (e: any) {
-      setError(e?.response?.data?.error || "Failed to load pantry");
-    } finally {
-      setLoading(false);
-    }
+    await fetch();
   };
 
   useEffect(() => { load(); }, []);
@@ -32,23 +21,24 @@ export default function Pantry() {
   const addItem = async () => {
     setAdding(true);
     try {
-      await api.pantry.create({ name, quantity, unit, expires_at: expiresAt || undefined });
+      await create({ name, quantity, unit, expires_at: expiresAt || undefined } as any);
       setName(""); setQuantity(""); setUnit(""); setExpiresAt("");
       await load();
       toast.success("Added to pantry");
     } catch (e: any) {
-      toast.error(e?.response?.data?.error || "Failed to add pantry item");
+      // error toasting handled in store; keep extra toast for safety if needed
+      // toast.error(extractErrorMessage(e, "Failed to add pantry item"));
     } finally { setAdding(false); }
   };
 
-  const remove = async (id: string | number) => {
+  const onRemove = async (id: string | number) => {
     setRemovingId(id);
     try {
-      await api.pantry.remove(id);
+      await removeItem(id);
       await load();
       toast.success("Removed");
     } catch (e: any) {
-      toast.error(e?.response?.data?.error || "Failed to remove item");
+      // error toasting handled in store
     } finally { setRemovingId(null); }
   };
 
@@ -78,7 +68,7 @@ export default function Pantry() {
                   <div className="font-medium">{it.name}</div>
                   <div className="text-sm text-gray-600">{[it.quantity, it.unit].filter(Boolean).join(" ")}</div>
                 </div>
-                <button className="text-red-600 disabled:opacity-60 inline-flex items-center gap-2" disabled={removingId===it.id} onClick={()=>remove(it.id)}>
+                <button className="text-red-600 disabled:opacity-60 inline-flex items-center gap-2" disabled={removingId===it.id} onClick={()=>onRemove(it.id)}>
                   {removingId===it.id? (<><Spinner size={14} color="#b91c1c" /><span>Removing...</span></>) : 'Remove'}
                 </button>
               </li>
