@@ -6,12 +6,17 @@ import { Spinner } from "../../components/Spinner";
 
 export default function Login() {
   const nav = useNavigate();
-  const { login, error, clearError, token, hydrated, bootstrap, loading } = useAuthStore();
+  const { login, error, clearError, token, hydrated, bootstrap, loading, user } = useAuthStore();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   useEffect(() => { if (!hydrated) bootstrap(); }, [hydrated]);
-  useEffect(() => { if (token && hydrated) nav("/app/dashboard", { replace: true }); }, [token, hydrated]);
+  useEffect(() => {
+    if (token && hydrated) {
+      if (user?.role === 'admin') nav('/admin/dashboard', { replace: true });
+      else nav("/app/dashboard", { replace: true });
+    }
+  }, [token, hydrated, user?.role]);
   useEffect(() => { if (error) toast.error(error); }, [error]);
 
   return (

@@ -21,7 +21,7 @@ export function Layout() {
       <main className="flex-1">
         <Outlet />
       </main>
-      <Toaster position="top-center" richColors />
+      <Toaster position="top-right" richColors />
     </div>
   );
 }
@@ -31,17 +31,18 @@ export function AdminLayout() {
     <div className="min-h-dvh flex flex-col">
       <header className="sticky top-0 z-10" style={{ backgroundColor: Colors.primary }}>
         <div className="mx-auto max-w-6xl px-4 h-14 flex items-center justify-between">
-          <Link to="/" className="font-bold text-white">Bunzi Admin</Link>
+          <Link to="/admin/dashboard" className="font-bold text-white">Bunzi Admin</Link>
           <nav className="flex items-center gap-4 text-sm">
             <NavLink to="/admin/users" style={({isActive}) => ({ color: isActive ? Colors.accent : "#eaeaea" })}>Users</NavLink>
             <NavLink to="/admin/recipes" style={({isActive}) => ({ color: isActive ? Colors.accent : "#eaeaea" })}>Recipes</NavLink>
+            <NavLink to="/admin/settings" style={({isActive}) => ({ color: isActive ? Colors.accent : "#eaeaea" })}>Settings</NavLink>
           </nav>
         </div>
       </header>
       <main className="flex-1">
         <Outlet />
       </main>
-      <Toaster position="top-center" richColors />
+      <Toaster position="top-right" richColors />
     </div>
   );
 }

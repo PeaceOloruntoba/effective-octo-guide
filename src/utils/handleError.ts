@@ -7,7 +7,8 @@ export type HandleErrorOptions = {
 
 export function extractErrorMessage(error: any, fallback = "Something went wrong") {
   // axios error shape: error.response.data.error | error.message
-  const resMsg = error?.response?.data?.error || error?.response?.data?.message;
+  // API.md defines { error, errorMessage }
+  const resMsg = error?.response?.data?.errorMessage || error?.response?.data?.error || error?.response?.data?.message;
   const msg = typeof resMsg === "string" ? resMsg : (error?.message as string | undefined);
   return msg || fallback;
 }

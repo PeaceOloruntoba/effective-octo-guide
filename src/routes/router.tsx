@@ -11,8 +11,10 @@ import Shopping from "../views/app/Shopping";
 import Settings from "../views/app/Settings";
 import AdminUsers from "../views/admin/Users";
 import AdminRecipes from "../views/admin/Recipes";
+import AdminDashboard from "../views/admin/Dashboard";
 import { useAuthStore } from "../store/useAuthStore";
 import type { JSX } from "react";
+import AdminSettings from "../views/admin/Settings";
 
 function RequireAuth({ children }: { children: JSX.Element }) {
   const { token, hydrated } = useAuthStore();
@@ -58,9 +60,11 @@ export const router = createBrowserRouter([
       </RequireAdmin>
     ),
     children: [
-      { index: true, element: <Navigate to="users" replace /> },
+      { index: true, element: <Navigate to="dashboard" replace /> },
+      { path: "dashboard", element: <AdminDashboard /> },
       { path: "users", element: <AdminUsers /> },
       { path: "recipes", element: <AdminRecipes /> },
+      { path: "settings", element: <AdminSettings /> },
     ],
   },
 ]);

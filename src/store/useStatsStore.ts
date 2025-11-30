@@ -4,27 +4,29 @@ import { handleError } from "../utils/handleError";
 
 type State = {
   data: any | null;
+  totals: { calories: number; protein_grams: number; carbs_grams: number; fat_grams: number } | null;
   loading: boolean;
   error: string | null;
 };
 
 type Actions = {
-  range: (from: string, to: string) => Promise<void>;
+  summary: (period: "daily" | "week" | "month") => Promise<void>;
   clearError: () => void;
 };
 
 export const useStatsStore = create<State & Actions>((set) => ({
   data: null,
+  totals: null,
   loading: false,
   error: null,
 
-  range: async (from, to) => {
+  summary: async (period) => {
     set({ loading: true, error: null });
     try {
-      const { data } = await http.get(`/stats`, { params: { from, to } });
-      set({ data });
+      const { data } = await http.get(`/stats/summary`, { params: { period } });
+      set({ data, totals: data?.totals ?? null });
     } catch (e: any) {
-      set({ error: handleError(e, { fallbackMessage: "Failed to fetch stats" }) });
+      set({ error: handleError(e, { fallbackMessage: "Failed to fetch stats summary" }) });
     } finally {
       set({ loading: false });
     }

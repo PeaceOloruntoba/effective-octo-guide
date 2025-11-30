@@ -1,5 +1,6 @@
 import { create } from "zustand";
-import { api, setAccessToken } from "../utils/api";
+import { http, setAccessToken } from "../utils/api";
+import { handleError } from "../utils/handleError";
 
 export type User = { id: string; email: string; name?: string; role?: string };
 
@@ -47,9 +48,10 @@ export const useAuthStore = create<State & Actions>((set, get) => ({
   register: async (payload) => {
     set({ loading: true, error: null });
     try {
-      return await api.auth.register(payload);
+      const { data } = await http.post(`/auth/register`, payload);
+      return data;
     } catch (e: any) {
-      set({ error: e?.response?.data?.error || "Registration failed" });
+      set({ error: handleError(e, { fallbackMessage: "Registration failed" }) });
       throw e;
     } finally {
       set({ loading: false });
@@ -59,9 +61,9 @@ export const useAuthStore = create<State & Actions>((set, get) => ({
   verifyOtp: async (payload) => {
     set({ loading: true, error: null });
     try {
-      await api.auth.verifyOtp(payload);
+      await http.post(`/auth/verify-otp`, payload);
     } catch (e: any) {
-      set({ error: e?.response?.data?.error || "OTP verification failed" });
+      set({ error: handleError(e, { fallbackMessage: "OTP verification failed" }) });
       throw e;
     } finally {
       set({ loading: false });
@@ -71,14 +73,15 @@ export const useAuthStore = create<State & Actions>((set, get) => ({
   login: async (payload) => {
     set({ loading: true, error: null });
     try {
-      const data = await api.auth.login(payload);
+      const { data } = await http.post(`/auth/login`, payload);
+      console.log(data)
       const token = (data as any)?.token as string | undefined;
       if (!token) throw new Error("No token");
       setAccessToken(token);
       set({ token });
       await get().fetchMe();
     } catch (e: any) {
-      set({ error: e?.response?.data?.error || "Login failed" });
+      set({ error: handleError(e, { fallbackMessage: "Login failed" }) });
       throw e;
     } finally {
       set({ loading: false });
@@ -87,7 +90,7 @@ export const useAuthStore = create<State & Actions>((set, get) => ({
 
   logout: async () => {
     try {
-      await api.auth.logout().catch(() => {});
+      await http.post(`/auth/logout`).catch(() => {});
     } finally {
       setAccessToken(null);
       set({ token: null, user: null });
@@ -96,7 +99,7 @@ export const useAuthStore = create<State & Actions>((set, get) => ({
 
   logoutAll: async () => {
     try {
-      await api.auth.logoutAll().catch(() => {});
+      await http.post(`/auth/logout-all`).catch(() => {});
     } finally {
       setAccessToken(null);
       set({ token: null, user: null });
@@ -106,9 +109,9 @@ export const useAuthStore = create<State & Actions>((set, get) => ({
   forgot: async (payload) => {
     set({ loading: true, error: null });
     try {
-      await api.auth.forgot(payload);
+      await http.post(`/auth/forgot-password`, payload);
     } catch (e: any) {
-      set({ error: e?.response?.data?.error || "Failed to send reset code" });
+      set({ error: handleError(e, { fallbackMessage: "Failed to send reset code" }) });
       throw e;
     } finally {
       set({ loading: false });
@@ -118,9 +121,9 @@ export const useAuthStore = create<State & Actions>((set, get) => ({
   reset: async (payload) => {
     set({ loading: true, error: null });
     try {
-      await api.auth.reset(payload);
+      await http.post(`/auth/reset-password`, payload);
     } catch (e: any) {
-      set({ error: e?.response?.data?.error || "Failed to reset password" });
+      set({ error: handleError(e, { fallbackMessage: "Failed to reset password" }) });
       throw e;
     } finally {
       set({ loading: false });
@@ -130,8 +133,8 @@ export const useAuthStore = create<State & Actions>((set, get) => ({
   fetchMe: async () => {
     set({ loading: true, error: null });
     try {
-      const user = await api.auth.me();
-      set({ user });
+      const { data } = await http.get(`/users/me`);
+      set({ user: data as User });
     } catch (e: any) {
       setAccessToken(null);
       set({ token: null, user: null });
