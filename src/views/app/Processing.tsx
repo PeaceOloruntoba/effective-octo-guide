@@ -13,12 +13,12 @@ export default function Processing() {
   const timerRef = useRef<number | null>(null);
 
   useEffect(() => {
-    // Kick off first fetch
     fetchStatus().catch(() => {});
     timerRef.current = window.setInterval(async () => {
       setTries((t) => t + 1);
       try { await fetchStatus(); } catch {}
     }, 4000);
+
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, []);
 
@@ -27,35 +27,51 @@ export default function Processing() {
     if (status.status === 'active') {
       if (timerRef.current) clearInterval(timerRef.current);
       setDone(true);
-      // redirect back to billing after a short pause
       setTimeout(() => nav('/app/billing', { replace: true }), 1200);
     }
     if (tries > 45 && !done) {
-      // ~3 minutes timeout
       if (timerRef.current) clearInterval(timerRef.current);
       setDone(true);
     }
   }, [status, tries]);
 
   return (
-    <div className="p-4 max-w-xl mx-auto">
-      <h1 className="text-2xl font-bold mb-2">Processing payment</h1>
-      {refFromQuery ? (
-        <div className="text-sm text-gray-600 mb-4">Reference: {refFromQuery}</div>
-      ) : null}
-      {!done ? (
-        <div className="flex items-center gap-2"><Spinner size={16} /><span>Waiting for confirmation...</span></div>
-      ) : (
-        status?.status === 'active' ? (
-          <div className="text-green-700 font-semibold">Payment confirmed. Redirecting…</div>
-        ) : (
-          <div className="text-amber-700">
-            We couldn't confirm the payment yet. You can refresh this page or check your Billing page.
+    <div className="p-4 flex justify-center">
+      <div className="w-full max-w-md bg-white shadow-md rounded-lg p-6 border border-gray-100 text-center">
+        <h1 className="text-2xl font-bold mb-3">Processing Payment</h1>
+        
+        {refFromQuery && (
+          <div className="text-sm text-gray-500 mb-4 break-all">
+            Reference: <span className="font-medium">{refFromQuery}</span>
           </div>
-        )
-      )}
-      <div className="mt-6 flex gap-3">
-        <button className="h-10 px-4 rounded bg-primary text-white" onClick={() => nav('/app/billing', { replace: true })}>Go to Billing</button>
+        )}
+
+        {!done ? (
+          <div className="flex flex-col items-center gap-3 py-6">
+            <Spinner size={24} />
+            <span className="text-gray-600">Waiting for confirmation...</span>
+          </div>
+        ) : (
+          <div className="py-6">
+            {status?.status === 'active' ? (
+              <div className="text-green-700 font-semibold text-lg">Payment confirmed. Redirecting…</div>
+            ) : (
+              <div className="text-amber-700 font-medium">
+                We couldn't confirm the payment yet. <br />
+                You can refresh this page or check your Billing page.
+              </div>
+            )}
+          </div>
+        )}
+
+        <div className="mt-4 flex justify-center">
+          <button
+            className="h-10 px-5 rounded-lg bg-primary text-white hover:bg-primary/90 transition"
+            onClick={() => nav('/app/billing', { replace: true })}
+          >
+            Go to Billing
+          </button>
+        </div>
       </div>
     </div>
   );
