@@ -271,7 +271,7 @@ export default function LandingPage() {
 
       {/* CTA */}
       <section className="px-4 py-20 text-center">
-        <h2 className="text-3xl font-bold mb-4">Ready to Eat Smarter?</h2>
+        <h2 className="text-3xl font-bold mb-12">Ready to Eat Smarter?</h2>
         <Link
           to="/signup"
           className="px-6 py-3 rounded-md font-semibold bg-accent text-neutral-900 shadow hover:shadow-lg transition"
@@ -281,7 +281,7 @@ export default function LandingPage() {
       </section>
 
       {/* MOBILE APP – COMING SOON */}
-      <section className="px-4 py-20 max-w-5xl mx-auto">
+      <section className="px-4 py-12 pb-20 max-w-5xl mx-auto">
         <div className="text-center mb-10">
           <h2 className="text-3xl font-bold mb-3">Our Mobile App</h2>
           <p className="text-white/80 max-w-2xl mx-auto">
