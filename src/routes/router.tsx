@@ -9,6 +9,7 @@ import Nutrition from "../views/app/Nutrition";
 import Pantry from "../views/app/Pantry";
 import Shopping from "../views/app/Shopping";
 import Settings from "../views/app/Settings";
+import SettingsEditProfile from "../views/app/SettingsEditProfile";
 import Billing from "../views/app/Billing";
 import Processing from "../views/app/Processing";
 import AdminUsers from "../views/admin/Users";
@@ -57,6 +58,7 @@ export const router = createBrowserRouter([
       { path: "pantry", element: <Pantry /> },
       { path: "shopping", element: <Shopping /> },
       { path: "settings", element: <Settings /> },
+      { path: "settings/edit-profile", element: <SettingsEditProfile /> },
       { path: "billing", element: <Billing /> },
       { path: "billing/processing", element: <Processing /> },
     ],
