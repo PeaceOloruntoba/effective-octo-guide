@@ -2,7 +2,13 @@ import { create } from "zustand";
 import { http, setAccessToken } from "../utils/api";
 import { handleError } from "../utils/handleError";
 
-export type User = { id: string; email: string; first_name?: string; last_name?: string; role?: string };
+export type User = {
+  id: string;
+  email: string;
+  first_name?: string;
+  last_name?: string;
+  role?: string;
+};
 
 type State = {
   token: string | null;
@@ -10,18 +16,37 @@ type State = {
   loading: boolean;
   error: string | null;
   hydrated: boolean;
+  plans: Plans | null;
 };
+
+type Plan = {
+  plan: string;
+  price_cents: number;
+  currency: string;
+};
+
+type Plans = Plan[];
 
 type Actions = {
   bootstrap: () => Promise<void>;
-  register: (payload: { email: string; password: string; first_name: string; last_name: string }) => Promise<any>;
+  register: (payload: {
+    email: string;
+    password: string;
+    first_name: string;
+    last_name: string;
+  }) => Promise<any>;
   verifyOtp: (payload: { email: string; code: string }) => Promise<void>;
   login: (payload: { email: string; password: string }) => Promise<void>;
   logout: () => Promise<void>;
   logoutAll: () => Promise<void>;
   forgot: (payload: { email: string }) => Promise<void>;
-  reset: (payload: { email: string; code: string; password: string }) => Promise<void>;
+  reset: (payload: {
+    email: string;
+    code: string;
+    password: string;
+  }) => Promise<void>;
   fetchMe: () => Promise<void>;
+  fetchPublicPlans: () => Promise<void>;
   clearError: () => void;
 };
 
@@ -31,13 +56,16 @@ export const useAuthStore = create<State & Actions>((set, get) => ({
   loading: false,
   error: null,
   hydrated: false,
+  plans: null,
 
   bootstrap: async () => {
     try {
       const t = localStorage.getItem("access_token");
       if (t) {
         setAccessToken(t);
-        await get().fetchMe().catch(() => {});
+        await get()
+          .fetchMe()
+          .catch(() => {});
         set({ token: t });
       }
     } finally {
@@ -51,7 +79,9 @@ export const useAuthStore = create<State & Actions>((set, get) => ({
       const { data } = await http.post(`/auth/register`, payload);
       return data;
     } catch (e: any) {
-      set({ error: handleError(e, { fallbackMessage: "Registration failed" }) });
+      set({
+        error: handleError(e, { fallbackMessage: "Registration failed" }),
+      });
       throw e;
     } finally {
       set({ loading: false });
@@ -63,7 +93,9 @@ export const useAuthStore = create<State & Actions>((set, get) => ({
     try {
       await http.post(`/auth/verify-otp`, payload);
     } catch (e: any) {
-      set({ error: handleError(e, { fallbackMessage: "OTP verification failed" }) });
+      set({
+        error: handleError(e, { fallbackMessage: "OTP verification failed" }),
+      });
       throw e;
     } finally {
       set({ loading: false });
@@ -74,7 +106,7 @@ export const useAuthStore = create<State & Actions>((set, get) => ({
     set({ loading: true, error: null });
     try {
       const { data } = await http.post(`/auth/login`, payload);
-      console.log(data)
+      console.log(data);
       const token = (data as any)?.token as string | undefined;
       if (!token) throw new Error("No token");
       setAccessToken(token);
@@ -111,7 +143,9 @@ export const useAuthStore = create<State & Actions>((set, get) => ({
     try {
       await http.post(`/auth/forgot-password`, payload);
     } catch (e: any) {
-      set({ error: handleError(e, { fallbackMessage: "Failed to send reset code" }) });
+      set({
+        error: handleError(e, { fallbackMessage: "Failed to send reset code" }),
+      });
       throw e;
     } finally {
       set({ loading: false });
@@ -123,7 +157,9 @@ export const useAuthStore = create<State & Actions>((set, get) => ({
     try {
       await http.post(`/auth/reset-password`, payload);
     } catch (e: any) {
-      set({ error: handleError(e, { fallbackMessage: "Failed to reset password" }) });
+      set({
+        error: handleError(e, { fallbackMessage: "Failed to reset password" }),
+      });
       throw e;
     } finally {
       set({ loading: false });
@@ -138,6 +174,23 @@ export const useAuthStore = create<State & Actions>((set, get) => ({
     } catch (e: any) {
       setAccessToken(null);
       set({ token: null, user: null });
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  fetchPublicPlans: async () => {
+    set({ loading: true, error: null });
+    try {
+      const { data } = await http.get(`/billing/public/plans`);
+      set({ plans: data?.plans as Plans });
+    } catch (e: any) {
+      set({
+        error: handleError(e, {
+          fallbackMessage: "Failed to fetch public plans",
+        }),
+      });
+      throw e;
     } finally {
       set({ loading: false });
     }
