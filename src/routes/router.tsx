@@ -18,6 +18,8 @@ import { useAuthStore } from "../store/useAuthStore";
 import type { JSX } from "react";
 import AdminSettings from "../views/admin/Settings";
 import AdminSubscriptions from "../views/admin/Subscriptions";
+import Forgot from "../views/auth/Forgot";
+import Reset from "../views/auth/Reset";
 
 function RequireAuth({ children }: { children: JSX.Element }) {
   const { token, hydrated } = useAuthStore();
@@ -38,6 +40,8 @@ export const router = createBrowserRouter([
   { path: "/", element: <Landing /> },
   { path: "/login", element: <Login /> },
   { path: "/signup", element: <Signup /> },
+  { path: "/forgot-password", element: <Forgot /> },
+  { path: "/reset-password", element: <Reset /> },
   {
     path: "/app",
     element: (

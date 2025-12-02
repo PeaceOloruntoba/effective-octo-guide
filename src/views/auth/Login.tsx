@@ -32,7 +32,7 @@ export default function Login() {
           </button>
           <div className="flex justify-between text-sm">
             <Link to="/signup">Create account</Link>
-            <Link to="/forgot">Forgot password?</Link>
+            <Link to="/forgot-password">Forgot password?</Link>
           </div>
         </div>
       </div>

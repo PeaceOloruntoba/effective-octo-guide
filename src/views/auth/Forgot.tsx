@@ -2,15 +2,18 @@ import { useState } from "react";
 import { useAuthStore } from "../../store/useAuthStore";
 import { Spinner } from "../../components/Spinner";
 import { toast } from "sonner";
+import { useNavigate } from "react-router";
 
 export default function Forgot() {
   const { forgot, loading } = useAuthStore();
   const [email, setEmail] = useState("");
+  const navigate = useNavigate()
 
   const onSubmit = async () => {
     try {
       await forgot({ email });
       toast.success("A reset code has been sent to your email.");
+      navigate("/reset-password")
     } catch {}
   };
 

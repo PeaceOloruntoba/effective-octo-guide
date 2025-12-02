@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useAuthStore } from "../../store/useAuthStore";
 import { Spinner } from "../../components/Spinner";
 import { toast } from "sonner";
+import { useNavigate } from "react-router";
 
 export default function Reset() {
   const { reset, loading } = useAuthStore();
@@ -9,10 +10,13 @@ export default function Reset() {
   const [code, setCode] = useState("");
   const [password, setPassword] = useState("");
 
+  const navigate = useNavigate()
+
   const onSubmit = async () => {
     try {
       await reset({ email, code, password });
       toast.success("Password updated. You can sign in now.");
+      navigate("/login")
     } catch {}
   };
 
