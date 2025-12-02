@@ -12,7 +12,7 @@ export default function AdminSettings() {
       {/* User info card */}
       <div className="rounded-lg border shadow-sm p-6 bg-white space-y-2">
         <div className="text-xs text-gray-500">Signed in as</div>
-        <div className="text-lg font-semibold">{user?.name || "-"}</div>
+        <div className="text-lg font-semibold">{user?.first_name}{" "}{user?.last_name}</div>
         <div className="text-gray-700">{user?.email}</div>
       </div>
 
