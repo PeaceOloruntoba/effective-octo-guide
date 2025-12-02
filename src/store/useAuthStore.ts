@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { http, setAccessToken } from "../utils/api";
 import { handleError } from "../utils/handleError";
 
-export type User = { id: string; email: string; name?: string; role?: string };
+export type User = { id: string; email: string; first_name?: string; last_name?: string; role?: string };
 
 type State = {
   token: string | null;
@@ -14,7 +14,7 @@ type State = {
 
 type Actions = {
   bootstrap: () => Promise<void>;
-  register: (payload: { email: string; password: string; name?: string }) => Promise<any>;
+  register: (payload: { email: string; password: string; first_name: string; last_name: string }) => Promise<any>;
   verifyOtp: (payload: { email: string; code: string }) => Promise<void>;
   login: (payload: { email: string; password: string }) => Promise<void>;
   logout: () => Promise<void>;
