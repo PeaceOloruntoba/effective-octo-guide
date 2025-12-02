@@ -9,6 +9,12 @@ export default function AdminRecipes() {
   const [name, setName] = useState("");
   const [category, setCategory] = useState("");
   const [image, setImage] = useState<File | null>(null);
+  const [imageUrl, setImageUrl] = useState("");
+
+  // Replace image modal state
+  const [replaceOpenFor, setReplaceOpenFor] = useState<number | null>(null);
+  const [replaceFile, setReplaceFile] = useState<File | null>(null);
+  const [replaceUrl, setReplaceUrl] = useState("");
 
   const load = async () => await fetch();
 
@@ -22,14 +28,20 @@ export default function AdminRecipes() {
         toast.error("Name and category are required");
         return;
       }
+      if (image && imageUrl) {
+        toast.error("Provide either an image file or an image URL, not both");
+        return;
+      }
       const form = new FormData();
       form.append("name", name);
       form.append("category", category);
       if (image) form.append("image", image);
+      if (!image && imageUrl) form.append("image_url", imageUrl);
       await create(form);
       setName("");
       setCategory("");
       setImage(null);
+      setImageUrl("");
       setModalOpen(false);
       await load();
       toast.success("Recipe created");
@@ -47,13 +59,29 @@ export default function AdminRecipes() {
       toast.error("Failed");
     }
   };
-  const onReplaceImage = async (id: number, file: File) => {
+  const submitReplace = async () => {
+    const id = replaceOpenFor;
+    if (!id) return;
+    if (replaceFile && replaceUrl) {
+      toast.error("Provide either a file or a URL, not both");
+      return;
+    }
     try {
-      const form = new FormData();
-      form.append("image", file);
-      await replaceImage(id, form);
-      toast.success("Image replaced");
-      load();
+      if (replaceFile) {
+        const form = new FormData();
+        form.append("image", replaceFile);
+        await replaceImage(id, form);
+      } else if (replaceUrl) {
+        await onUpdate(id, { image_url: replaceUrl });
+      } else {
+        toast.error("Please select a file or enter an image URL");
+        return;
+      }
+      toast.success("Image updated");
+      setReplaceOpenFor(null);
+      setReplaceFile(null);
+      setReplaceUrl("");
+      await load();
     } catch {
       toast.error("Failed");
     }
@@ -133,18 +161,12 @@ export default function AdminRecipes() {
                     >
                       Set category
                     </button>
-                    <label className="px-2 py-1 rounded border cursor-pointer">
+                    <button
+                      className="px-2 py-1 rounded border"
+                      onClick={() => { setReplaceOpenFor(r.id); setReplaceFile(null); setReplaceUrl(""); }}
+                    >
                       Replace image
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={(e) => {
-                          const f = e.target.files?.[0];
-                          if (f) onReplaceImage(r.id, f);
-                        }}
-                      />
-                    </label>
+                    </button>
                     <button
                       className="px-2 py-1 rounded border text-red-600"
                       onClick={() => onRemove(r.id)}
@@ -177,6 +199,13 @@ export default function AdminRecipes() {
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
               />
+              <div className="text-sm text-gray-600">Add either an image file or a direct image URL</div>
+              <input
+                className="h-10 rounded border px-3"
+                placeholder="Image URL (optional)"
+                value={imageUrl}
+                onChange={(e) => setImageUrl(e.target.value)}
+              />
               <input
                 className="h-10 rounded border px-3"
                 type="file"
@@ -196,6 +225,44 @@ export default function AdminRecipes() {
                 onClick={createRecipe}
               >
                 Create
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Replace Image Modal */}
+      {replaceOpenFor !== null && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+            <h3 className="text-lg font-semibold mb-4">Replace Image</h3>
+            <div className="grid gap-3 mb-4">
+              <div className="text-sm text-gray-600">Paste a direct image URL or upload a new file</div>
+              <input
+                className="h-10 rounded border px-3"
+                placeholder="Image URL"
+                value={replaceUrl}
+                onChange={(e) => setReplaceUrl(e.target.value)}
+              />
+              <input
+                className="h-10 rounded border px-3"
+                type="file"
+                accept="image/*"
+                onChange={(e) => setReplaceFile(e.target.files?.[0] || null)}
+              />
+            </div>
+            <div className="flex justify-end gap-2">
+              <button
+                className="px-4 py-2 rounded border"
+                onClick={() => { setReplaceOpenFor(null); setReplaceFile(null); setReplaceUrl(""); }}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-4 py-2 rounded bg-primary text-white"
+                onClick={submitReplace}
+              >
+                Save
               </button>
             </div>
           </div>

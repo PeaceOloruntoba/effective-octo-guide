@@ -17,6 +17,8 @@ type State = {
   error: string | null;
   hydrated: boolean;
   plans: Plans | null;
+  verifyEmail: string | null;
+  resetEmail: string | null;
 };
 
 type Plan = {
@@ -48,6 +50,9 @@ type Actions = {
   fetchMe: () => Promise<void>;
   fetchPublicPlans: () => Promise<void>;
   clearError: () => void;
+  resendOtp: (payload: { email: string; purpose: 'verify' | 'password_reset' }) => Promise<void>;
+  setVerifyEmail: (email: string | null) => void;
+  setResetEmail: (email: string | null) => void;
 };
 
 export const useAuthStore = create<State & Actions>((set, get) => ({
@@ -57,6 +62,8 @@ export const useAuthStore = create<State & Actions>((set, get) => ({
   error: null,
   hydrated: false,
   plans: null,
+  verifyEmail: null,
+  resetEmail: null,
 
   bootstrap: async () => {
     try {
@@ -113,7 +120,8 @@ export const useAuthStore = create<State & Actions>((set, get) => ({
       set({ token });
       set({ user: data.user as User });
     } catch (e: any) {
-      set({ error: handleError(e, { fallbackMessage: "Login failed" }) });
+      // Propagate error to caller to allow custom handling (e.g., unverified)
+      set({ error: handleError(e, { fallbackMessage: "Login failed", silent: true }) });
       throw e;
     } finally {
       set({ loading: false });
@@ -197,4 +205,19 @@ export const useAuthStore = create<State & Actions>((set, get) => ({
   },
 
   clearError: () => set({ error: null }),
+
+  resendOtp: async (payload) => {
+    set({ loading: true, error: null });
+    try {
+      await http.post(`/auth/resend-otp`, payload);
+    } catch (e: any) {
+      set({ error: handleError(e, { fallbackMessage: 'Failed to resend code' }) });
+      throw e;
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  setVerifyEmail: (email) => set({ verifyEmail: email }),
+  setResetEmail: (email) => set({ resetEmail: email }),
 }));

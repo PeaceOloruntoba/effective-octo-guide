@@ -5,8 +5,8 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router";
 
 export default function Reset() {
-  const { reset, loading } = useAuthStore();
-  const [email, setEmail] = useState("");
+  const { reset, loading, resetEmail } = useAuthStore();
+  const [email, setEmail] = useState(resetEmail || "");
   const [code, setCode] = useState("");
   const [password, setPassword] = useState("");
 

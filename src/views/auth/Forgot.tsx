@@ -13,6 +13,7 @@ export default function Forgot() {
     try {
       await forgot({ email });
       toast.success("A reset code has been sent to your email.");
+      useAuthStore.getState().setResetEmail(email);
       navigate("/reset-password")
     } catch {}
   };
