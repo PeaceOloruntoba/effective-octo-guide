@@ -1,20 +1,25 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useRecipesStore } from "../../store/useRecipesStore";
+import QuillEditor from "../../components/QuillEditor";
+import { useNavigate } from "react-router";
 
 export default function AdminRecipes() {
-  const { items, loading, error, fetch, create, update, replaceImage, remove } =
+  const { items, loading, error, fetch, create, remove } =
     useRecipesStore();
+  const navigate = useNavigate();
   const [modalOpen, setModalOpen] = useState(false);
   const [name, setName] = useState("");
   const [category, setCategory] = useState("");
   const [image, setImage] = useState<File | null>(null);
-  const [imageUrl, setImageUrl] = useState("");
-
-  // Replace image modal state
-  const [replaceOpenFor, setReplaceOpenFor] = useState<number | null>(null);
-  const [replaceFile, setReplaceFile] = useState<File | null>(null);
-  const [replaceUrl, setReplaceUrl] = useState("");
+  const [imageUrl, setImageUrl] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+  const [details, setDetails] = useState<string>("");
+  const [calories, setCalories] = useState<string>("");
+  const [protein, setProtein] = useState<string>("");
+  const [carbs, setCarbs] = useState<string>("");
+  const [fat, setFat] = useState<string>("");
+  const [submitting, setSubmitting] = useState(false);
 
   const load = async () => await fetch();
 
@@ -24,6 +29,7 @@ export default function AdminRecipes() {
 
   const createRecipe = async () => {
     try {
+      setSubmitting(true);
       if (!name || !category) {
         toast.error("Name and category are required");
         return;
@@ -35,6 +41,13 @@ export default function AdminRecipes() {
       const form = new FormData();
       form.append("name", name);
       form.append("category", category);
+      if (description) form.append("description", description);
+      if (details) form.append("details", details);
+      if (calories) form.append("calories", calories);
+      if (protein) form.append("protein_grams", protein);
+      if (carbs) form.append("carbs_grams", carbs);
+      if (fat) form.append("fat_grams", fat);
+      if (imageUrl) form.append("image_url", imageUrl);
       if (image) form.append("image", image);
       if (!image && imageUrl) form.append("image_url", imageUrl);
       await create(form);
@@ -42,50 +55,22 @@ export default function AdminRecipes() {
       setCategory("");
       setImage(null);
       setImageUrl("");
+      setDescription("");
+      setDetails("");
+      setCalories("");
+      setProtein("");
+      setCarbs("");
+      setFat("");
       setModalOpen(false);
       await load();
       toast.success("Recipe created");
     } catch (e: any) {
       toast.error(e?.response?.data?.error || "Failed to create");
+    } finally {
+      setSubmitting(false);
     }
   };
 
-  const onUpdate = async (id: number, patch: any) => {
-    try {
-      await update(id, patch);
-      toast.success("Updated");
-      load();
-    } catch {
-      toast.error("Failed");
-    }
-  };
-  const submitReplace = async () => {
-    const id = replaceOpenFor;
-    if (!id) return;
-    if (replaceFile && replaceUrl) {
-      toast.error("Provide either a file or a URL, not both");
-      return;
-    }
-    try {
-      if (replaceFile) {
-        const form = new FormData();
-        form.append("image", replaceFile);
-        await replaceImage(id, form);
-      } else if (replaceUrl) {
-        await onUpdate(id, { image_url: replaceUrl });
-      } else {
-        toast.error("Please select a file or enter an image URL");
-        return;
-      }
-      toast.success("Image updated");
-      setReplaceOpenFor(null);
-      setReplaceFile(null);
-      setReplaceUrl("");
-      await load();
-    } catch {
-      toast.error("Failed");
-    }
-  };
   const onRemove = async (id: number) => {
     try {
       await remove(id);
@@ -126,7 +111,7 @@ export default function AdminRecipes() {
             </thead>
             <tbody>
               {items.map((r) => (
-                <tr key={r.id} className="border-b">
+                <tr key={r.id} className="border-b hover:bg-gray-50 cursor-pointer" onClick={() => navigate(`/admin/recipes/${r.id}`)}>
                   <td className="p-2">
                     {r.image_url ? (
                       <img
@@ -139,34 +124,7 @@ export default function AdminRecipes() {
                   </td>
                   <td className="p-2">{r.name}</td>
                   <td className="p-2">{r.category}</td>
-                  <td className="p-2 flex flex-wrap gap-2 items-center">
-                    <button
-                      className="px-2 py-1 rounded border"
-                      onClick={() =>
-                        onUpdate(r.id, {
-                          name: prompt("New name", r.name) || r.name,
-                        })
-                      }
-                    >
-                      Rename
-                    </button>
-                    <button
-                      className="px-2 py-1 rounded border"
-                      onClick={() =>
-                        onUpdate(r.id, {
-                          category:
-                            prompt("New category", r.category) || r.category,
-                        })
-                      }
-                    >
-                      Set category
-                    </button>
-                    <button
-                      className="px-2 py-1 rounded border"
-                      onClick={() => { setReplaceOpenFor(r.id); setReplaceFile(null); setReplaceUrl(""); }}
-                    >
-                      Replace image
-                    </button>
+                  <td className="p-2" onClick={(e) => e.stopPropagation()}>
                     <button
                       className="px-2 py-1 rounded border text-red-600"
                       onClick={() => onRemove(r.id)}
@@ -184,7 +142,7 @@ export default function AdminRecipes() {
       {/* Modal */}
       {modalOpen && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-2xl max-h-[85vh] overflow-y-auto">
             <h3 className="text-lg font-semibold mb-4">Create Recipe</h3>
             <div className="grid gap-3 mb-4">
               <input
@@ -199,13 +157,28 @@ export default function AdminRecipes() {
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
               />
-              <div className="text-sm text-gray-600">Add either an image file or a direct image URL</div>
+              <textarea
+                className="min-h-20 rounded border px-3 py-2"
+                placeholder="Description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+              <div>
+                <div className="text-sm font-medium mb-1">Details (rich text)</div>
+                <QuillEditor value={details} onChange={setDetails} className="overflow-auto" />
+              </div>
               <input
                 className="h-10 rounded border px-3"
                 placeholder="Image URL (optional)"
                 value={imageUrl}
                 onChange={(e) => setImageUrl(e.target.value)}
               />
+              <div className="grid grid-cols-2 gap-3">
+                <input className="h-10 rounded border px-3" placeholder="Calories" value={calories} onChange={(e) => setCalories(e.target.value)} />
+                <input className="h-10 rounded border px-3" placeholder="Protein (g)" value={protein} onChange={(e) => setProtein(e.target.value)} />
+                <input className="h-10 rounded border px-3" placeholder="Carbs (g)" value={carbs} onChange={(e) => setCarbs(e.target.value)} />
+                <input className="h-10 rounded border px-3" placeholder="Fat (g)" value={fat} onChange={(e) => setFat(e.target.value)} />
+              </div>
               <input
                 className="h-10 rounded border px-3"
                 type="file"
@@ -217,52 +190,16 @@ export default function AdminRecipes() {
               <button
                 className="px-4 py-2 rounded border"
                 onClick={() => setModalOpen(false)}
+                disabled={submitting}
               >
                 Cancel
               </button>
               <button
-                className="px-4 py-2 rounded bg-primary text-white"
+                className={`px-4 py-2 rounded bg-primary text-white ${submitting ? "opacity-60 cursor-not-allowed" : ""}`}
                 onClick={createRecipe}
+                disabled={submitting}
               >
-                Create
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Replace Image Modal */}
-      {replaceOpenFor !== null && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
-            <h3 className="text-lg font-semibold mb-4">Replace Image</h3>
-            <div className="grid gap-3 mb-4">
-              <div className="text-sm text-gray-600">Paste a direct image URL or upload a new file</div>
-              <input
-                className="h-10 rounded border px-3"
-                placeholder="Image URL"
-                value={replaceUrl}
-                onChange={(e) => setReplaceUrl(e.target.value)}
-              />
-              <input
-                className="h-10 rounded border px-3"
-                type="file"
-                accept="image/*"
-                onChange={(e) => setReplaceFile(e.target.files?.[0] || null)}
-              />
-            </div>
-            <div className="flex justify-end gap-2">
-              <button
-                className="px-4 py-2 rounded border"
-                onClick={() => { setReplaceOpenFor(null); setReplaceFile(null); setReplaceUrl(""); }}
-              >
-                Cancel
-              </button>
-              <button
-                className="px-4 py-2 rounded bg-primary text-white"
-                onClick={submitReplace}
-              >
-                Save
+                {submitting ? "Creating..." : "Create"}
               </button>
             </div>
           </div>

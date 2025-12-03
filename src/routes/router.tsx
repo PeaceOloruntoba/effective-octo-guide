@@ -7,14 +7,17 @@ import Signup from "../views/auth/Signup";
 import Verify from "../views/auth/Verify";
 import Dashboard from "../views/app/Dashboard";
 import Recipes from "../views/app/Recipes";
+import RecipeDetails from "../views/app/RecipeDetails";
 import Nutrition from "../views/app/Nutrition";
 import Pantry from "../views/app/Pantry";
 import Shopping from "../views/app/Shopping";
 import Settings from "../views/app/Settings";
+import SettingsEditProfile from "../views/app/SettingsEditProfile";
 import Billing from "../views/app/Billing";
 import Processing from "../views/app/Processing";
 import AdminUsers from "../views/admin/Users";
 import AdminRecipes from "../views/admin/Recipes";
+import AdminRecipeDetails from "../views/admin/RecipeDetails";
 import AdminDashboard from "../views/admin/Dashboard";
 import { useAuthStore } from "../store/useAuthStore";
 import type { JSX } from "react";
@@ -61,10 +64,12 @@ export const router = createBrowserRouter([
       { index: true, element: <Navigate to="dashboard" replace /> },
       { path: "dashboard", element: <Dashboard /> },
       { path: "recipes", element: <Recipes /> },
+      { path: "recipes/:id", element: <RecipeDetails /> },
       { path: "nutrition", element: <Nutrition /> },
       { path: "pantry", element: <Pantry /> },
       { path: "shopping", element: <Shopping /> },
       { path: "settings", element: <Settings /> },
+      { path: "settings/edit-profile", element: <SettingsEditProfile /> },
       { path: "billing", element: <Billing /> },
       { path: "billing/processing", element: <Processing /> },
     ],
@@ -81,6 +86,7 @@ export const router = createBrowserRouter([
       { path: "dashboard", element: <AdminDashboard /> },
       { path: "users", element: <AdminUsers /> },
       { path: "recipes", element: <AdminRecipes /> },
+      { path: "recipes/:id", element: <AdminRecipeDetails /> },
       { path: "subscriptions", element: <AdminSubscriptions /> },
       { path: "settings", element: <AdminSettings /> },
     ],
