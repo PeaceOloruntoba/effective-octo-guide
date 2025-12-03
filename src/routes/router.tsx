@@ -25,6 +25,7 @@ import AdminSettings from "../views/admin/Settings";
 import AdminSubscriptions from "../views/admin/Subscriptions";
 import Forgot from "../views/auth/Forgot";
 import Reset from "../views/auth/Reset";
+import Newsletter from "../views/admin/Newsletter";
 
 function RequireAuth({ children }: { children: JSX.Element }) {
   const { token, hydrated } = useAuthStore();
@@ -87,6 +88,7 @@ export const router = createBrowserRouter([
       { path: "users", element: <AdminUsers /> },
       { path: "recipes", element: <AdminRecipes /> },
       { path: "recipes/:id", element: <AdminRecipeDetails /> },
+      { path: "newsletter", element: <Newsletter /> },
       { path: "subscriptions", element: <AdminSubscriptions /> },
       { path: "settings", element: <AdminSettings /> },
     ],
