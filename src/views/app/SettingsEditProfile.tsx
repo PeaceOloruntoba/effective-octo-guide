@@ -77,7 +77,7 @@ export default function SettingsEditProfile() {
         const data = await useProfileStore.getState().getProfile();
         if (!mounted || !data) return;
         const u = data.user;
-        const p = data.profile || {};
+        const p = normalizeProfileForEdit(data.profile || {});
         setFirstName(u.first_name || "");
         setLastName(u.last_name || "");
         // Merge: draft overrides server
@@ -290,4 +290,57 @@ function MultiSelect({ label, value, onChange, options }: { label: string; value
       </div>
     </div>
   );
+}
+
+// --- Helpers to normalize profile for editing ---
+const EDIT_ARRAY_FIELDS = new Set([
+  "health_goals",
+  "food_allergies",
+  "medical_dietary_restrictions",
+  "macronutrient_focus",
+  "favorite_flavors",
+  "cuisine_preferences",
+  "texture_preference",
+  "foods_loved",
+  "foods_disliked",
+  "kitchen_equipment_available",
+]);
+
+function editTryParseJson<T = any>(s: string): T | null { try { return JSON.parse(s); } catch { return null; } }
+
+function editNormalizeArray(v: any): string[] {
+  if (Array.isArray(v)) return v.map(String);
+  if (typeof v === 'string') {
+    const t = v.trim();
+    const parsed = (t.startsWith('[') && t.endsWith(']')) ? editTryParseJson<string[]>(t) : null;
+    if (parsed) return parsed.map(String);
+    return t ? t.split(',').map(s=>s.trim()).filter(Boolean) : [];
+  }
+  return [];
+}
+
+function formatBioForEdit(raw: any): string | null {
+  if (raw == null) return null;
+  if (typeof raw === 'string') {
+    const parsed = editTryParseJson<any>(raw);
+    if (parsed != null) {
+      if (typeof parsed === 'string') return parsed;
+      if (Array.isArray(parsed)) return parsed.join(', ');
+      if (typeof parsed === 'object') return Object.values(parsed).map(String).join(', ');
+    }
+    const cleaned = raw.replace(/^\s*[\[{"']+|[\]}"']+\s*$/g, '').replace(/"/g,'');
+    return cleaned;
+  }
+  if (Array.isArray(raw)) return raw.map(String).join(', ');
+  if (typeof raw === 'object') return Object.values(raw).map(String).join(', ');
+  return String(raw);
+}
+
+function normalizeProfileForEdit(p: Record<string, any>) {
+  const out: Record<string, any> = { ...p };
+  for (const k of EDIT_ARRAY_FIELDS) {
+    if (k in out) out[k] = editNormalizeArray(out[k]);
+  }
+  out.bio = formatBioForEdit(out.bio);
+  return out;
 }
