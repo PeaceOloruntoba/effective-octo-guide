@@ -27,7 +27,23 @@ export default function Login() {
         <div className="grid gap-3">
           <input className="h-10 rounded border px-3" placeholder="Email" value={email} onChange={(e)=>setEmail(e.target.value)} />
           <input className="h-10 rounded border px-3" placeholder="Password" type="password" value={password} onChange={(e)=>setPassword(e.target.value)} />
-          <button className="h-10 rounded text-white disabled:opacity-60 flex items-center justify-center gap-2 bg-primary" disabled={loading} onClick={async()=>{ clearError(); await login({email,password}).catch(()=>{}); }}>
+          <button className="h-10 rounded text-white disabled:opacity-60 flex items-center justify-center gap-2 bg-primary" disabled={loading} onClick={async()=>{
+            clearError();
+            try {
+              await login({email,password});
+            } catch (e: any) {
+              const status = e?.response?.status as number | undefined;
+              const msg = e?.response?.data?.errorMessage || e?.response?.data?.error;
+              if (status === 403 && /verify/i.test(String(msg || ''))) {
+                try {
+                  await useAuthStore.getState().resendOtp({ email, purpose: 'verify' });
+                } catch {}
+                useAuthStore.getState().setVerifyEmail(email);
+                toast.info("Please verify your email. We've sent a new code.");
+                nav('/verify-otp');
+              }
+            }
+          }}>
             {loading ? (<><Spinner size={16} color="#fff" /><span>Signing in...</span></>) : 'Sign in'}
           </button>
           <div className="flex justify-between text-sm">

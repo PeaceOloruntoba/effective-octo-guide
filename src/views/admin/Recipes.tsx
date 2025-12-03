@@ -34,6 +34,10 @@ export default function AdminRecipes() {
         toast.error("Name and category are required");
         return;
       }
+      if (image && imageUrl) {
+        toast.error("Provide either an image file or an image URL, not both");
+        return;
+      }
       const form = new FormData();
       form.append("name", name);
       form.append("category", category);
@@ -45,6 +49,7 @@ export default function AdminRecipes() {
       if (fat) form.append("fat_grams", fat);
       if (imageUrl) form.append("image_url", imageUrl);
       if (image) form.append("image", image);
+      if (!image && imageUrl) form.append("image_url", imageUrl);
       await create(form);
       setName("");
       setCategory("");
@@ -200,8 +205,6 @@ export default function AdminRecipes() {
           </div>
         </div>
       )}
-
-      {/* Edit/Replace moved to details page */}
     </div>
   );
 }

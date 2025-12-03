@@ -1,8 +1,10 @@
 import { createBrowserRouter, Navigate } from "react-router";
 import { Layout, AdminLayout } from "../components/Layout";
+import AuthLayout from "../components/AuthLayout";
 import Landing from "../views/Landing";
 import Login from "../views/auth/Login";
 import Signup from "../views/auth/Signup";
+import Verify from "../views/auth/Verify";
 import Dashboard from "../views/app/Dashboard";
 import Recipes from "../views/app/Recipes";
 import RecipeDetails from "../views/app/RecipeDetails";
@@ -41,10 +43,16 @@ function RequireAdmin({ children }: { children: JSX.Element }) {
 
 export const router = createBrowserRouter([
   { path: "/", element: <Landing /> },
-  { path: "/login", element: <Login /> },
-  { path: "/signup", element: <Signup /> },
-  { path: "/forgot-password", element: <Forgot /> },
-  { path: "/reset-password", element: <Reset /> },
+  {
+    element: <AuthLayout />,
+    children: [
+      { path: "/login", element: <Login /> },
+      { path: "/signup", element: <Signup /> },
+      { path: "/verify-otp", element: <Verify /> },
+      { path: "/forgot-password", element: <Forgot /> },
+      { path: "/reset-password", element: <Reset /> },
+    ],
+  },
   {
     path: "/app",
     element: (
