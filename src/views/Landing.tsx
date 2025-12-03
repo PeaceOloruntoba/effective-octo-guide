@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
 import { logo } from "../assets";
 import { useAuthStore } from "../store/useAuthStore";
+import SupportContact from "../components/SupportContact";
 
 const MEAL_IMAGES = [
   "https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=1200&auto=format&fit=crop",
@@ -308,6 +309,7 @@ export default function LandingPage() {
         </div>
       </section>
 
+      <SupportContact />
       <footer className="px-4 py-6 text-center text-white/70 text-sm">
         © 2025 BunziTech. Eat well, every day.
       </footer>

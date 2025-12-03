@@ -1,5 +1,6 @@
 import { Outlet, Link } from "react-router";
 import { logo } from "../assets";
+import SupportContact from "./SupportContact";
 
 export default function AuthLayout() {
   return (
@@ -27,6 +28,7 @@ export default function AuthLayout() {
           <Outlet />
         </div>
       </div>
+      <SupportContact />
     </div>
   );
 }

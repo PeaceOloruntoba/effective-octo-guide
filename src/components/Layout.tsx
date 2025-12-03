@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, NavLink, Outlet } from "react-router";
 import { Toaster } from "sonner";
+import SupportContact from "./SupportContact";
 
 function Sidebar({
   links,
@@ -111,6 +112,7 @@ export function Layout() {
         <Outlet />
       </main>
 
+      <SupportContact />
       <Toaster position="top-right" richColors />
     </div>
   );
@@ -168,6 +170,7 @@ export function AdminLayout() {
         <Outlet />
       </main>
 
+      <SupportContact />
       <Toaster position="top-right" richColors />
     </div>
   );
