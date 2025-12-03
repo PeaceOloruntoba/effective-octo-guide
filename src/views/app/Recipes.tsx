@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRecipesStore } from "../../store/useRecipesStore";
 import { Spinner } from "../../components/Spinner";
+import { useNavigate } from "react-router";
 
 export default function Recipes() {
   const { items, loading, error, fetch } = useRecipesStore();
   const [q, setQ] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => { fetch(); }, []);
 
@@ -42,7 +44,8 @@ export default function Recipes() {
           {filtered.map((r) => (
             <li
               key={r.id}
-              className="rounded-lg overflow-hidden border bg-white shadow-sm hover:shadow-md transition flex flex-col"
+              className="rounded-lg overflow-hidden border bg-white shadow-sm hover:shadow-md transition flex flex-col cursor-pointer"
+              onClick={() => navigate(`/app/recipes/${r.id}`)}
             >
               {r.image_url && (
                 <img
