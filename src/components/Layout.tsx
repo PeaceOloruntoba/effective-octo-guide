@@ -122,8 +122,8 @@ export function AdminLayout() {
     { name: "Users", to: "/admin/users" },
     { name: "Recipes", to: "/admin/recipes" },
     { name: "Subscriptions", to: "/admin/subscriptions" },
-    { name: "Settings", to: "/admin/settings" },
     { name: "Newsletter", to: "/admin/newsletter" },
+    { name: "Settings", to: "/admin/settings" },
   ];
 
   return (
