@@ -263,7 +263,7 @@ function Select({ label, value, onChange, options }: { label: string; value: any
       <select className="w-full h-10 border rounded px-3" value={value} onChange={(e)=>onChange(e.target.value)}>
         <option value="">Select...</option>
         {options.map((o)=> (
-          <option key={o} value={o}>{o}</option>
+          <option key={o} value={o}>{humanize(o)}</option>
         ))}
       </select>
     </div>
@@ -276,15 +276,15 @@ function MultiSelect({ label, value, onChange, options }: { label: string; value
   useEffect(()=>{ setText((value||[]).join(", ")); }, [value]);
   return (
     <div>
-      <label className="block text-sm text-gray-600 mb-1">{label}</label>
+      <label className="block text-sm text-gray-600 mb-1">{humanize(label)}</label>
       <div className="flex gap-2">
         <select className="flex-1 h-10 border rounded px-3" value="" onChange={(e)=>{ const v=e.target.value; if(!v) return; if(!value?.includes(v)) onChange([...(value||[]), v]); }}>
           <option value="">Add...</option>
-          {options.filter((o)=>!value?.includes(o)).map((o)=> (<option key={o} value={o}>{o}</option>))}
+          {options.filter((o)=>!value?.includes(o)).map((o)=> (<option key={o} value={o}>{humanize(o)}</option>))}
         </select>
         <button className="h-10 px-3 rounded bg-gray-100" onClick={()=>onChange([])}>Clear</button>
       </div>
-      <div className="mt-1 text-xs text-gray-600">Selected: {(value||[]).join(", ") || "None"}</div>
+      <div className="mt-1 text-xs text-gray-600">Selected: {humanizeArray(value||[])}{!(value&&value.length) && "None"}</div>
       <div className="mt-1">
         <input className="w-full h-9 border rounded px-2 text-xs" placeholder="Or type comma-separated values" value={text} onChange={(e)=>setText(e.target.value)} onBlur={()=>{ const parts = text.split(',').map(s=>s.trim()).filter(Boolean); onChange(parts); }} />
       </div>
@@ -343,4 +343,19 @@ function normalizeProfileForEdit(p: Record<string, any>) {
   }
   out.bio = formatBioForEdit(out.bio);
   return out;
+}
+
+// Humanize helpers
+function humanize(v: any): string {
+  const s = String(v ?? "");
+  return s
+    .replace(/[_-]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .replace(/\b\w/g, (m) => m.toUpperCase());
+}
+
+function humanizeArray(arr: any[]): string {
+  if (!Array.isArray(arr) || arr.length === 0) return "None";
+  return arr.map(humanize).join(', ');
 }

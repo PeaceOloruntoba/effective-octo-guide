@@ -44,39 +44,39 @@ export default function Settings() {
             <Section title="Health">
               <Grid>
                 <Row label="Age" value={pf.age ?? '—'} />
-                <Row label="Gender" value={pf.gender ?? '—'} />
+                <Row label="Gender" value={humanizeValue(pf.gender)} />
                 <Row label="Height (cm)" value={pf.height_cm ?? '—'} />
                 <Row label="Weight (kg)" value={pf.weight_kg ?? '—'} />
-                <Row label="Activity level" value={pf.activity_level ?? '—'} />
-                <Row label="Health goals" value={(pf.health_goals || []).join(', ') || '—'} />
-                <Row label="Food allergies" value={(pf.food_allergies || []).join(', ') || '—'} />
-                <Row label="Medical restrictions" value={(pf.medical_dietary_restrictions || []).join(', ') || '—'} />
+                <Row label="Activity level" value={humanizeValue(pf.activity_level)} />
+                <Row label="Health goals" value={humanizeArray(pf.health_goals)} />
+                <Row label="Food allergies" value={humanizeArray(pf.food_allergies)} />
+                <Row label="Medical restrictions" value={humanizeArray(pf.medical_dietary_restrictions)} />
                 <Row label="Preferred calories" value={pf.preferred_calorie_range ?? '—'} />
-                <Row label="Macronutrient focus" value={(pf.macronutrient_focus || []).join(', ') || '—'} />
+                <Row label="Macronutrient focus" value={humanizeArray(pf.macronutrient_focus)} />
               </Grid>
             </Section>
             <Section title="Taste">
               <Grid>
-                <Row label="Favorite flavors" value={(pf.favorite_flavors || []).join(', ') || '—'} />
-                <Row label="Cuisine preferences" value={(pf.cuisine_preferences || []).join(', ') || '—'} />
-                <Row label="Heat tolerance" value={pf.heat_tolerance ?? '—'} />
-                <Row label="Texture preference" value={(pf.texture_preference || []).join(', ') || '—'} />
-                <Row label="Foods loved" value={(pf.foods_loved || []).join(', ') || '—'} />
-                <Row label="Foods disliked" value={(pf.foods_disliked || []).join(', ') || '—'} />
-                <Row label="Snack personality" value={pf.snack_personality ?? '—'} />
+                <Row label="Favorite flavors" value={humanizeArray(pf.favorite_flavors)} />
+                <Row label="Cuisine preferences" value={humanizeArray(pf.cuisine_preferences)} />
+                <Row label="Heat tolerance" value={humanizeValue(pf.heat_tolerance)} />
+                <Row label="Texture preference" value={humanizeArray(pf.texture_preference)} />
+                <Row label="Foods loved" value={humanizeArray(pf.foods_loved)} />
+                <Row label="Foods disliked" value={humanizeArray(pf.foods_disliked)} />
+                <Row label="Snack personality" value={humanizeValue(pf.snack_personality)} />
               </Grid>
             </Section>
             <Section title="Preferences">
               <Grid>
-                <Row label="Meal prep style" value={pf.meal_prep_style ?? '—'} />
-                <Row label="Cooking skill level" value={pf.cooking_skill_level ?? '—'} />
-                <Row label="Budget level" value={pf.budget_level ?? '—'} />
+                <Row label="Meal prep style" value={humanizeValue(pf.meal_prep_style)} />
+                <Row label="Cooking skill level" value={humanizeValue(pf.cooking_skill_level)} />
+                <Row label="Budget level" value={humanizeValue(pf.budget_level)} />
                 <Row label="Meals per day" value={pf.meals_per_day ?? '—'} />
-                <Row label="Diet type" value={pf.diet_type ?? '—'} />
-                <Row label="Household size" value={pf.household_size ?? '—'} />
-                <Row label="Shopping frequency" value={pf.shopping_frequency ?? '—'} />
-                <Row label="Equipment" value={(pf.kitchen_equipment_available || []).join(', ') || '—'} />
-                <Row label="Leftovers preference" value={pf.leftovers_preference ?? '—'} />
+                <Row label="Diet type" value={humanizeValue(pf.diet_type)} />
+                <Row label="Household size" value={humanizeValue(pf.household_size)} />
+                <Row label="Shopping frequency" value={humanizeValue(pf.shopping_frequency)} />
+                <Row label="Equipment" value={humanizeArray(pf.kitchen_equipment_available)} />
+                <Row label="Leftovers preference" value={humanizeValue(pf.leftovers_preference)} />
               </Grid>
             </Section>
           </div>
@@ -166,4 +166,21 @@ function formatProfile(p: Record<string, any>) {
   // Bio
   out.bio = formatBio(out.bio);
   return out;
+}
+
+function humanizeValue(v: any): string {
+  if (v == null || v === '') return '—';
+  const s = String(v);
+  // convert snake_case or kebab-case to words, handle numbers
+  return s
+    .replace(/[_-]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .replace(/\b\w/g, (m) => m.toUpperCase());
+}
+
+function humanizeArray(arr: any): string {
+  const a = Array.isArray(arr) ? arr : [];
+  if (!a.length) return '—';
+  return a.map(humanizeValue).join(', ');
 }
